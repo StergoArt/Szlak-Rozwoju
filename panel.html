@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- [FIX #4] Metatagi mobilne — zapobiega zoomowaniu formularzy na iOS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panel Klienta — Szlak Rozwoju</title>
+    <meta name="description" content="Panel klienta Szlak Rozwoju — historia terapii, notatki, dokumenty i grafik wizyt.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="panel/css/panel.css">
+</head>
+
+<body>
+    <!-- Loader (widoczny do załadowania sesji) -->
+    <div id="appLoader" class="loading-overlay" role="status" aria-label="Ładowanie">
+        <span class="spinner"></span>
+    </div>
+
+    <!-- Nawigacja -->
+    <nav class="panel-nav">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <img src="logo.png" alt="Szlak Rozwoju">
+                <span>Panel Klienta</span>
+            </a>
+
+            <!-- Widoczne gdy niezalogowany -->
+            <div id="navGuest" class="nav-links" style="display: none;">
+                <a href="index.html">Strona główna</a>
+            </div>
+
+            <!-- Widoczne gdy zalogowany -->
+            <div id="navAuth" class="nav-links" style="display: none;">
+                <a href="index.html">Strona główna</a>
+                <div class="nav-user">
+                    <span id="navUserName" class="nav-user-name"></span>
+                    <span id="navUserRole" class="nav-user-role"></span>
+                    <button id="logoutBtn" class="btn-logout">Wyloguj</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Kontener widoków -->
+    <div class="panel-container">
+
+        <!-- ===== WIDOK: Logowanie ===== -->
+        <div id="view-login" class="view">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <h2>Zaloguj się</h2>
+                    <p class="auth-subtitle">Witaj w panelu klienta Szlak Rozwoju</p>
+
+                    <div id="loginAlert" class="alert"></div>
+
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail">Email</label>
+                            <input type="email" id="loginEmail" placeholder="twoj@email.pl" required autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Hasło</label>
+                            <input type="password" id="loginPassword" placeholder="Wpisz hasło" required minlength="6" autocomplete="current-password">
+                        </div>
+                        <button type="submit" id="loginBtn" class="btn-primary">Zaloguj się</button>
+                    </form>
+
+                    <div class="auth-switch">
+                        Nie masz konta? <a href="#/register">Zarejestruj się</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== WIDOK: Rejestracja ===== -->
+        <div id="view-register" class="view">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <h2>Zarejestruj się</h2>
+                    <p class="auth-subtitle">Utwórz konto w panelu Szlak Rozwoju</p>
+
+                    <div id="registerAlert" class="alert"></div>
+
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label for="registerName">Imię i nazwisko</label>
+                            <input type="text" id="registerName" placeholder="Jan Kowalski" required autocomplete="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail">Email</label>
+                            <input type="email" id="registerEmail" placeholder="twoj@email.pl" required autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPhone">Telefon (opcjonalnie)</label>
+                            <input type="tel" id="registerPhone" placeholder="123 456 789" autocomplete="tel">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword">Hasło</label>
+                            <input type="password" id="registerPassword" placeholder="Min. 6 znaków" required minlength="6" autocomplete="new-password">
+                        </div>
+                        <button type="submit" id="registerBtn" class="btn-primary">Utwórz konto</button>
+                    </form>
+
+                    <div class="auth-switch">
+                        Masz już konto? <a href="#/login">Zaloguj się</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== WIDOK: Dashboard ===== -->
+        <div id="view-dashboard" class="view">
+            <div class="dashboard-header">
+                <h1 id="dashboardGreeting">Witaj!</h1>
+                <p id="dashboardSubtitle">Twój panel klienta</p>
+            </div>
+
+            <div class="dashboard-cards">
+                <a href="#/notes" class="dashboard-card dashboard-card-link">
+                    <div class="card-icon">📝</div>
+                    <h3>Notatki z sesji</h3>
+                    <p>Historia notatek i zapisków z Twoich sesji terapeutycznych.</p>
+                    <div class="card-status active-status">Przejdź do notatek</div>
+                </a>
+
+                <div class="dashboard-card">
+                    <div class="card-icon">📁</div>
+                    <h3>Dokumenty i zdjęcia</h3>
+                    <p>Przechowuj dokumenty, zdjęcia i materiały związane z terapią.</p>
+                    <div class="card-status coming-soon">Wkrótce dostępne</div>
+                </div>
+
+                <a href="#/schedule" class="dashboard-card dashboard-card-link">
+                    <div class="card-icon">📅</div>
+                    <h3>Grafik wizyt</h3>
+                    <p>Przeglądaj dostępne terminy i rezerwuj wizyty online.</p>
+                    <div class="card-status active-status">Przejdź do grafiku</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== WIDOK: Notatki z sesji ===== -->
+        <div id="view-notes" class="view">
+            <div class="notes-header">
+                <a href="#/dashboard" class="back-link">← Dashboard</a>
+                <h1 id="notesTitle">Notatki z sesji</h1>
+            </div>
+
+            <div class="notes-layout">
+                <!-- Sidebar klientów (tylko terapeuta) -->
+                <aside id="clientsSidebar" class="clients-sidebar" style="display: none;">
+                    <h3>Klienci</h3>
+                    <input type="text" id="clientSearch" class="client-search" placeholder="Szukaj klienta...">
+                    <div id="clientsList" class="clients-list">
+                        <div class="spinner-container"><span class="spinner"></span></div>
+                    </div>
+                </aside>
+
+                <!-- Panel główny z notatkami -->
+                <main class="notes-main">
+                    <!-- Pasek akcji (terapeuta) -->
+                    <div id="notesActions" class="notes-actions" style="display: none;">
+                        <span id="notesClientName" class="notes-client-name"></span>
+                        <button id="addNoteBtn" class="btn-primary btn-sm">+ Dodaj notatkę</button>
+                    </div>
+
+                    <!-- Kontener na listę notatek / formularz -->
+                    <div id="notesContent" class="notes-content">
+                        <div class="spinner-container"><span class="spinner"></span></div>
+                    </div>
+
+                    <!-- Przycisk "Załaduj więcej" -->
+                    <div id="notesLoadMore" class="notes-load-more" style="display: none;">
+                        <button id="loadMoreBtn" class="btn-secondary btn-sm">Załaduj więcej</button>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- ===== WIDOK: Sesja online ===== -->
+        <div id="view-session" class="view">
+            <div class="session-header">
+                <a href="#/schedule" class="back-link">&larr; Grafik wizyt</a>
+                <h1 id="sessionTitle">Sesja online</h1>
+                <div id="sessionInfo" class="session-info"></div>
+            </div>
+            <div id="sessionContainer" class="session-container"></div>
+            <div id="sessionActions" class="session-actions" style="display: none;">
+                <a id="sessionExternalLink" href="#" target="_blank" rel="noopener"
+                   class="btn-secondary btn-sm">Otwórz w nowej karcie</a>
+                <button id="sessionEndBtn" class="btn-primary btn-sm" style="width:auto;">Zakończ sesję</button>
+            </div>
+        </div>
+
+        <!-- ===== WIDOK: Grafik wizyt ===== -->
+        <div id="view-schedule" class="view">
+            <div class="schedule-header">
+                <a href="#/dashboard" class="back-link">&larr; Dashboard</a>
+                <h1 id="scheduleTitle">Grafik wizyt</h1>
+            </div>
+
+            <!-- Nawigacja tygodnia -->
+            <div class="schedule-nav">
+                <button id="schedulePrev" class="btn-icon-nav" title="Poprzedni tydzień" aria-label="Poprzedni tydzień">&lsaquo;</button>
+                <span id="scheduleWeekLabel" class="schedule-week-label"></span>
+                <button id="scheduleNext" class="btn-icon-nav" title="Następny tydzień" aria-label="Następny tydzień">&rsaquo;</button>
+                <button id="scheduleToday" class="btn-secondary btn-sm schedule-today-btn">Dziś</button>
+            </div>
+
+            <!-- Desktop: siatka tygodniowa -->
+            <div id="scheduleGrid" class="schedule-grid"></div>
+
+            <!-- Pasek akcji terapeuty -->
+            <div id="scheduleActions" class="schedule-actions" style="display: none;">
+                <button id="addSlotBtn" class="btn-primary btn-sm schedule-action-btn">+ Dodaj termin</button>
+                <button id="copyWeekBtn" class="btn-secondary btn-sm schedule-action-btn">Kopiuj tydzień</button>
+            </div>
+
+            <!-- Moje wizyty (klient) -->
+            <div id="myAppointments" class="my-appointments" style="display: none;">
+                <h2>Moje wizyty</h2>
+                <div id="myAppointmentsList" class="my-appointments-list"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Booking dialog modal -->
+    <div id="bookingDialog" class="booking-dialog" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="bookingDialogTitle">
+        <div class="booking-dialog-backdrop"></div>
+        <div class="booking-dialog-content">
+            <h3 id="bookingDialogTitle">Potwierdzenie rezerwacji</h3>
+            <form id="bookingForm">
+                <div id="bookingDialogDetails" class="booking-dialog-details"></div>
+                <div class="form-group">
+                    <label for="bookingServiceType">Rodzaj wizyty (opcjonalnie)</label>
+                    <select id="bookingServiceType" class="schedule-select">
+                        <option value="">— Wybierz —</option>
+                        <option value="socjoterapia_indywidualna">Socjoterapia indywidualna</option>
+                        <option value="socjoterapia_grupowa">Socjoterapia grupowa</option>
+                        <option value="tus">TUS</option>
+                        <option value="zajecia_ruchowe">Zajęcia ruchowe</option>
+                        <option value="konsultacja">Konsultacja</option>
+                    </select>
+                </div>
+                <div class="booking-dialog-buttons">
+                    <button type="submit" id="bookingConfirmBtn" class="btn-primary btn-sm" data-testid="booking-confirm-btn">Zarezerwuj</button>
+                    <button type="button" id="bookingCancelBtn" class="btn-secondary btn-sm" data-testid="booking-cancel-btn">Anuluj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Slot form modal (terapeuta) -->
+    <div id="slotFormModal" class="booking-dialog" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="slotFormTitle">
+        <div class="booking-dialog-backdrop"></div>
+        <div class="booking-dialog-content slot-form-content">
+            <h3 id="slotFormTitle">Nowy termin</h3>
+            <form id="slotForm">
+                <div id="slotFormAlert" class="note-form-alert"></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="slotDate">Data</label>
+                        <input type="date" id="slotDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="slotStartTime">Od</label>
+                        <input type="time" id="slotStartTime" value="09:00" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Czas trwania</label>
+                    <div class="duration-options">
+                        <label class="duration-option"><input type="radio" name="slotDuration" value="30"> 30 min</label>
+                        <label class="duration-option"><input type="radio" name="slotDuration" value="50" checked> 50 min</label>
+                        <label class="duration-option"><input type="radio" name="slotDuration" value="60"> 60 min</label>
+                        <label class="duration-option"><input type="radio" name="slotDuration" value="90"> 90 min</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="slotClientId">Klient (opcjonalnie)</label>
+                    <select id="slotClientId" class="schedule-select">
+                        <option value="">— Nie przypisuj klienta —</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="slotServiceType">Rodzaj (opcjonalnie)</label>
+                    <select id="slotServiceType" class="schedule-select">
+                        <option value="">— Dowolny —</option>
+                        <option value="socjoterapia_indywidualna">Socjoterapia indywidualna</option>
+                        <option value="socjoterapia_grupowa">Socjoterapia grupowa</option>
+                        <option value="tus">TUS</option>
+                        <option value="zajecia_ruchowe">Zajęcia ruchowe</option>
+                        <option value="konsultacja">Konsultacja</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="slotNotes">Notatka (opcjonalnie)</label>
+                    <textarea id="slotNotes" class="schedule-select" rows="2" placeholder="Np. sesja indywidualna, przygotowanie do testu..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tryb sesji</label>
+                    <div class="duration-options">
+                        <label class="duration-option">
+                            <input type="radio" name="slotSessionMode" value="in_person" checked> Stacjonarna
+                        </label>
+                        <label class="duration-option">
+                            <input type="radio" name="slotSessionMode" value="online"> Online
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="repeat-label">
+                        <input type="checkbox" id="slotRepeat"> Powtórz w przyszłych tygodniach
+                    </label>
+                    <div id="slotRepeatWeeks" style="display: none; margin-top: 8px;">
+                        <label for="slotRepeatCount">Ile tygodni:</label>
+                        <input type="number" id="slotRepeatCount" min="1" max="12" value="4" class="repeat-count-input">
+                    </div>
+                </div>
+                <div class="booking-dialog-buttons">
+                    <button type="submit" id="slotFormSaveBtn" class="btn-primary btn-sm" data-testid="save-slot-btn">Zapisz</button>
+                    <button type="button" id="slotFormCancelBtn" class="btn-secondary btn-sm" data-testid="cancel-slot-btn">Anuluj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lightbox overlay -->
+    <div id="lightbox" class="lightbox" style="display: none;">
+        <div class="lightbox-backdrop"></div>
+        <div class="lightbox-content">
+            <button class="lightbox-close">✕</button>
+            <img id="lightboxImg" src="" alt="">
+        </div>
+    </div>
+
+    <!-- Supabase JS z CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Moduły panelu -->
+    <script src="panel/js/supabase-config.js"></script>
+    <script src="panel/js/router.js"></script>
+    <script src="panel/js/auth.js"></script>
+    <script src="panel/js/attachments.js"></script>
+    <script src="panel/js/notes.js"></script>
+    <script src="panel/js/schedule.js"></script>
+    <script src="panel/js/session.js"></script>
+
+    <script>
+        // Inicjalizacja aplikacji
+        (async function () {
+            try {
+                Auth.init();
+
+                // Sprawdź istniejącą sesję
+                var result = await supabase.auth.getSession();
+                var session = result.data.session;
+
+                if (session) {
+                    Auth.currentUser = session.user;
+                    await Auth.loadProfile();
+                    Auth.updateNavUI();
+                    Auth.renderDashboard();
+                }
+            } catch (err) {
+                console.error('Błąd inicjalizacji panelu:', err);
+            }
+
+            // Ukryj loader niezależnie od błędów
+            var loader = document.getElementById('appLoader');
+            if (loader) {
+                loader.style.display = 'none';
+            }
+
+            // Uruchom moduły i router po sprawdzeniu sesji
+            Notes.init();
+            Schedule.init();
+            Session.init();
+            Router.init();
+        })();
+    </script>
+</body>
+
+</html>
