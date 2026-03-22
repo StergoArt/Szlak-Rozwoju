@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- [FIX #4] Metatagi mobilne — zapobiega zoomowaniu formularzy na iOS -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Klienta — Szlak Rozwoju</title>
     <meta name="description" content="Panel klienta Szlak Rozwoju — historia terapii, notatki, dokumenty i grafik wizyt.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,7 +63,7 @@
                         </div>
                         <div class="form-group">
                             <label for="loginPassword">Hasło</label>
-                            <input type="password" id="loginPassword" placeholder="Wpisz hasło" required minlength="6" autocomplete="current-password">
+                            <input type="password" id="loginPassword" placeholder="Wpisz hasło" required minlength="8" autocomplete="current-password">
                         </div>
                         <button type="submit" id="loginBtn" class="btn-primary">Zaloguj się</button>
                     </form>
@@ -71,6 +71,52 @@
                     <div class="auth-switch">
                         Nie masz konta? <a href="#/register">Zarejestruj się</a>
                     </div>
+                    <div class="forgot-password-link">
+                        <a href="#/forgot-password">Nie pamiętasz hasła?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== WIDOK: Zapomniałem hasła ===== -->
+        <div id="view-forgot-password" class="view">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <h2>Resetowanie hasła</h2>
+                    <p class="auth-subtitle">Podaj adres email powiązany z kontem</p>
+                    <div id="forgotAlert" class="alert"></div>
+                    <form id="forgotForm">
+                        <div class="form-group">
+                            <label for="forgotEmail">Email</label>
+                            <input type="email" id="forgotEmail" placeholder="twoj@email.pl" required autocomplete="email">
+                        </div>
+                        <button type="submit" id="forgotBtn" class="btn-primary">Wyślij link resetujący</button>
+                    </form>
+                    <div class="auth-switch">
+                        <a href="#/login">Powrót do logowania</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== WIDOK: Nowe hasło ===== -->
+        <div id="view-reset-password" class="view">
+            <div class="auth-wrapper">
+                <div class="auth-card">
+                    <h2>Nowe hasło</h2>
+                    <p class="auth-subtitle">Ustaw nowe hasło do konta</p>
+                    <div id="resetAlert" class="alert"></div>
+                    <form id="resetForm">
+                        <div class="form-group">
+                            <label for="resetPassword">Nowe hasło</label>
+                            <input type="password" id="resetPassword" placeholder="Min. 6 znaków" required minlength="8" autocomplete="new-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="resetPasswordConfirm">Powtórz hasło</label>
+                            <input type="password" id="resetPasswordConfirm" placeholder="Powtórz nowe hasło" required minlength="8" autocomplete="new-password">
+                        </div>
+                        <button type="submit" id="resetBtn" class="btn-primary">Zmień hasło</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -99,7 +145,7 @@
                         </div>
                         <div class="form-group">
                             <label for="registerPassword">Hasło</label>
-                            <input type="password" id="registerPassword" placeholder="Min. 6 znaków" required minlength="6" autocomplete="new-password">
+                            <input type="password" id="registerPassword" placeholder="Min. 6 znaków" required minlength="8" autocomplete="new-password">
                         </div>
                         <button type="submit" id="registerBtn" class="btn-primary">Utwórz konto</button>
                     </form>
@@ -126,12 +172,11 @@
                     <div class="card-status active-status">Przejdź do notatek</div>
                 </a>
 
-                <div class="dashboard-card">
+                <a href="#/documents" class="dashboard-card dashboard-card-link">
                     <div class="card-icon">📁</div>
                     <h3>Dokumenty i zdjęcia</h3>
-                    <p>Przechowuj dokumenty, zdjęcia i materiały związane z terapią.</p>
-                    <div class="card-status coming-soon">Wkrótce dostępne</div>
-                </div>
+                    <p>Przeglądaj dokumenty i zdjęcia z notatek terapeutycznych.</p>
+                </a>
 
                 <a href="#/schedule" class="dashboard-card dashboard-card-link">
                     <div class="card-icon">📅</div>
@@ -180,6 +225,15 @@
             </div>
         </div>
 
+        <!-- ===== WIDOK: Dokumenty i zdjęcia ===== -->
+        <div id="view-documents" class="view">
+            <div class="schedule-header">
+                <a href="#/dashboard" class="back-link">&larr; Dashboard</a>
+                <h1>Dokumenty i zdjęcia</h1>
+            </div>
+            <div id="documentsList" class="documents-grid"></div>
+        </div>
+
         <!-- ===== WIDOK: Sesja online ===== -->
         <div id="view-session" class="view">
             <div class="session-header">
@@ -219,6 +273,11 @@
                 <button id="copyWeekBtn" class="btn-secondary btn-sm schedule-action-btn">Kopiuj tydzień</button>
             </div>
 
+            <!-- Przycisk propozycji terminu (klient) -->
+            <div id="clientRequestSection" style="display: none; text-align: center;">
+                <button id="requestAppointmentBtn" class="btn-request-appointment">Zaproponuj termin</button>
+            </div>
+
             <!-- Moje wizyty (klient) -->
             <div id="myAppointments" class="my-appointments" style="display: none;">
                 <h2>Moje wizyty</h2>
@@ -254,6 +313,55 @@
         </div>
     </div>
 
+    <!-- Request form modal (klient — propozycja terminu) -->
+    <div id="requestFormModal" class="booking-dialog" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="requestFormTitle">
+        <div class="booking-dialog-backdrop"></div>
+        <div class="booking-dialog-content slot-form-content">
+            <h3 id="requestFormTitle">Zaproponuj termin</h3>
+            <form id="requestForm">
+                <div id="requestFormAlert" class="note-form-alert"></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="requestDate">Preferowana data</label>
+                        <input type="date" id="requestDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="requestTime">Preferowana godzina</label>
+                        <input type="time" id="requestTime" value="10:00" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Czas trwania</label>
+                    <div class="duration-options">
+                        <label class="duration-option"><input type="radio" name="requestDuration" value="30"> 30 min</label>
+                        <label class="duration-option"><input type="radio" name="requestDuration" value="50" checked> 50 min</label>
+                        <label class="duration-option"><input type="radio" name="requestDuration" value="60"> 60 min</label>
+                        <label class="duration-option"><input type="radio" name="requestDuration" value="90"> 90 min</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="requestServiceType">Rodzaj wizyty (opcjonalnie)</label>
+                    <select id="requestServiceType" class="schedule-select">
+                        <option value="">— Dowolny —</option>
+                        <option value="socjoterapia_indywidualna">Socjoterapia indywidualna</option>
+                        <option value="socjoterapia_grupowa">Socjoterapia grupowa</option>
+                        <option value="tus">TUS</option>
+                        <option value="zajecia_ruchowe">Zajęcia ruchowe</option>
+                        <option value="konsultacja">Konsultacja</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="requestNotes">Uwagi (opcjonalnie)</label>
+                    <textarea id="requestNotes" class="schedule-select" rows="2" placeholder="Np. preferuję popołudnie, potrzebuję dłuższej sesji..."></textarea>
+                </div>
+                <div class="booking-dialog-buttons">
+                    <button type="submit" id="requestFormSaveBtn" class="btn-primary btn-sm">Wyślij propozycję</button>
+                    <button type="button" id="requestFormCancelBtn" class="btn-secondary btn-sm">Anuluj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Slot form modal (terapeuta) -->
     <div id="slotFormModal" class="booking-dialog" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="slotFormTitle">
         <div class="booking-dialog-backdrop"></div>
@@ -261,6 +369,16 @@
             <h3 id="slotFormTitle">Nowy termin</h3>
             <form id="slotForm">
                 <div id="slotFormAlert" class="note-form-alert"></div>
+                <div class="form-group">
+                    <div class="slot-mode-toggle">
+                        <label class="slot-mode-option">
+                            <input type="radio" name="slotMode" value="single" checked> Pojedynczy termin
+                        </label>
+                        <label class="slot-mode-option">
+                            <input type="radio" name="slotMode" value="range"> Zakres godzin
+                        </label>
+                    </div>
+                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="slotDate">Data</label>
@@ -270,8 +388,12 @@
                         <label for="slotStartTime">Od</label>
                         <input type="time" id="slotStartTime" value="09:00" required>
                     </div>
+                    <div class="form-group" id="slotRangeEndGroup" style="display: none;">
+                        <label for="slotRangeEndTime">Do</label>
+                        <input type="time" id="slotRangeEndTime" value="21:00">
+                    </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="slotDurationGroup">
                     <label>Czas trwania</label>
                     <div class="duration-options">
                         <label class="duration-option"><input type="radio" name="slotDuration" value="30"> 30 min</label>
@@ -279,6 +401,24 @@
                         <label class="duration-option"><input type="radio" name="slotDuration" value="60"> 60 min</label>
                         <label class="duration-option"><input type="radio" name="slotDuration" value="90"> 90 min</label>
                     </div>
+                </div>
+                <div class="form-group" id="slotRangeDurationGroup" style="display: none;">
+                    <label for="slotRangeDuration">Długość sesji</label>
+                    <select id="slotRangeDuration" class="schedule-select">
+                        <option value="30">30 min</option>
+                        <option value="50" selected>50 min</option>
+                        <option value="60">60 min</option>
+                        <option value="90">90 min</option>
+                    </select>
+                </div>
+                <div class="form-group" id="slotBreakGroup" style="display: none;">
+                    <label for="slotBreakTime">Przerwa między sesjami</label>
+                    <select id="slotBreakTime" class="schedule-select">
+                        <option value="0">Brak</option>
+                        <option value="5">5 min</option>
+                        <option value="10" selected>10 min</option>
+                        <option value="15">15 min</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="slotClientId">Klient (opcjonalnie)</label>
@@ -339,7 +479,9 @@
     </div>
 
     <!-- Supabase JS z CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.99.3/dist/umd/supabase.min.js"
+            integrity="sha384-4bKASEcnXfYfA/rrhF9qD3mYowkb5k4Xbzbrf3ccqgZrplKUrwnA2Q/L5xcdZFAp"
+            crossorigin="anonymous"></script>
     <!-- Moduły panelu -->
     <script src="panel/js/supabase-config.js"></script>
     <script src="panel/js/router.js"></script>
@@ -348,6 +490,7 @@
     <script src="panel/js/notes.js"></script>
     <script src="panel/js/schedule.js"></script>
     <script src="panel/js/session.js"></script>
+    <script src="panel/js/documents.js"></script>
 
     <script>
         // Inicjalizacja aplikacji
@@ -379,6 +522,7 @@
             Notes.init();
             Schedule.init();
             Session.init();
+            Documents.init();
             Router.init();
         })();
     </script>

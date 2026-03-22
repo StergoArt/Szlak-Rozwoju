@@ -280,6 +280,20 @@ body {
     text-decoration: underline;
 }
 
+.forgot-password-link {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+}
+.forgot-password-link a {
+    color: var(--color-text-light);
+    text-decoration: none;
+}
+.forgot-password-link a:hover {
+    color: var(--color-gold-dark);
+    text-decoration: underline;
+}
+
 /* ===== Komunikaty (alert/error/success) ===== */
 .alert {
     padding: 12px 16px;
@@ -1699,4 +1713,124 @@ body {
     .lightbox-content {
         padding: 16px;
     }
+}
+
+@media (max-width: 360px) {
+    .panel-container { padding: 80px 12px 24px; }
+    .auth-card { padding: 24px 16px; margin: 0 8px; }
+    .auth-card h2 { font-size: 20px; }
+    .dashboard-card { padding: 20px; }
+    .note-form { padding: 20px; }
+    .booking-dialog-content { margin: 8px; padding: 20px; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+}
+
+/* ===== Tryb zakresów godzin + Propozycje terminów ===== */
+.slot-mode-toggle {
+    display: flex;
+    gap: 0;
+    background: #F0F0F0;
+    border-radius: 8px;
+    padding: 3px;
+}
+.slot-mode-option {
+    flex: 1;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.2s ease;
+}
+.slot-mode-option:has(input:checked) {
+    background: #FFFFFF;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.slot-mode-option input[type="radio"] {
+    display: none;
+}
+
+.status-requested {
+    background: #FF8C42 !important;
+    color: #fff !important;
+    border-left-color: #E07000 !important;
+}
+.status-badge-requested {
+    background: #FFF0E0;
+    color: #E07000;
+}
+
+.btn-request-appointment {
+    background: #FF8C42;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: background 0.2s ease;
+}
+.btn-request-appointment:hover {
+    background: #E07000;
+}
+
+/* ===== Przeglądarka dokumentów ===== */
+.documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    padding: 16px 0;
+}
+.document-card {
+    background: var(--color-white);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.document-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+.document-preview {
+    height: 120px;
+    background: #F7F7F7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.document-preview-image {
+    background-size: cover;
+    background-position: center;
+}
+.document-icon {
+    font-size: 40px;
+}
+.document-name {
+    padding: 8px 10px 2px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.document-meta {
+    padding: 2px 10px 10px;
+    font-size: 11px;
+    color: var(--color-text-light);
+}
+
+@media (max-width: 480px) {
+    .documents-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .document-preview { height: 100px; }
 }

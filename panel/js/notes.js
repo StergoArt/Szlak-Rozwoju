@@ -145,6 +145,10 @@ var Notes = {
                 self._clientsLoaded = true;
                 self.renderClients(self.clients);
                 self.renderMobileSelect(self.clients);
+                // Auto-select jeśli jest dokładnie 1 klient
+                if (self.clients.length === 1 && !self.activeClientId) {
+                    self.selectClient(self.clients[0].id);
+                }
             })
             .catch(function (err) {
                 console.error('Wyjątek podczas pobierania klientów:', err);

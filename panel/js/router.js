@@ -1,8 +1,8 @@
 // Hash router z auth guards i obsługą błędów
 var Router = {
     routes: {
-        public: ['#/login', '#/register'],
-        protected: ['#/dashboard', '#/notes', '#/schedule', '#/session']
+        public: ['#/login', '#/register', '#/forgot-password'],
+        protected: ['#/dashboard', '#/notes', '#/schedule', '#/session', '#/reset-password', '#/documents']
     },
 
     defaultPublic: '#/login',

@@ -76,8 +76,7 @@
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: #FFFFFF;
             padding: 16px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             z-index: 1000;
@@ -144,6 +143,22 @@
             border-radius: 3px;
         }
 
+        .section-subtitle {
+            font-size: 20px;
+            color: #4A5568;
+            max-width: 700px;
+            margin: 24px auto 0;
+            font-family: 'Source Sans Pro', sans-serif;
+            line-height: 1.8;
+        }
+
+        .about-text {
+            font-size: 20px;
+            line-height: 1.8;
+            color: #4A5568;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+
         /* Buttons */
         .cta-button {
             background: linear-gradient(135deg, #FFCC00 0%, #FFB800 100%);
@@ -205,7 +220,7 @@
         }
 
         .hero h1 {
-            font-size: 64px;
+            font-size: clamp(28px, 6vw + 0.5rem, 64px);
             font-weight: 800;
             line-height: 1.2;
             margin-bottom: 24px;
@@ -888,6 +903,26 @@
             padding: 80px 24px;
         }
 
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: #2D3748;
+            margin: 5px 0;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
         /* Responsive Design */
         @media (max-width: 968px) {
 
@@ -895,14 +930,30 @@
             .about-grid,
             .services-grid,
             .packages-grid,
-            .benefits-grid,
             .contact-info-grid {
                 grid-template-columns: 1fr;
                 gap: 40px;
             }
 
-            .hero h1 {
-                font-size: 42px;
+            .benefits-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+
+            .hero-card {
+                padding: 48px;
+            }
+
+            .hero-card .icon {
+                font-size: 56px;
+            }
+
+            .about-grid {
+                gap: 60px;
+            }
+
+            .contact-info-grid {
+                gap: 30px;
             }
 
             .section-title {
@@ -914,13 +965,127 @@
                 flex-direction: column;
             }
 
+            .hamburger {
+                display: block;
+            }
+
             nav .nav-links {
                 display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #FFFFFF;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                padding-top: 100px;
+                gap: 20px;
+                font-size: 18px;
+                z-index: 999;
+            }
+
+            nav .nav-links.open {
+                display: flex;
+            }
+
+            .hamburger.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 6px);
+            }
+
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -6px);
             }
 
             .form-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        @media (max-width: 768px) {
+            .py-120 { padding: 80px 16px; }
+            .py-80 { padding: 60px 16px; }
+            .mb-80 { margin-bottom: 40px; }
+            .hero { padding-top: 80px; min-height: auto; }
+            .hero-card { padding: 40px; }
+            .hero-card .icon { font-size: 48px; }
+            .hero-card h3 { font-size: 22px; }
+            .about-avatar { width: 150px; height: 150px; font-size: 60px; }
+            .about-card h3 { font-size: 26px; }
+            .about-grid { gap: 40px; }
+            .contact-info-grid { gap: 24px; }
+            .packages-grid { gap: 20px; }
+            .path-curve { width: 150px; height: 150px; filter: blur(20px); }
+            .pricing-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .pricing-table table { min-width: 500px; }
+            .section-subtitle { font-size: 18px; }
+            .about-text { font-size: 18px; }
+            footer img { height: 60px; }
+            footer h3 { font-size: 22px; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 0 16px; }
+            .py-120 { padding: 60px 12px; }
+            .py-80 { padding: 40px 12px; }
+            nav img { height: 44px; }
+            .hero-text { font-size: 17px; }
+            .hero-text-bold { font-size: 16px; }
+            .hero-buttons { flex-direction: column; gap: 12px; }
+            .hero-buttons .cta-button,
+            .hero-buttons .cta-secondary { width: 100%; text-align: center; }
+            .cta-button, .cta-secondary { font-size: 16px; padding: 14px 28px; }
+            .hero-card { padding: 32px; }
+            .hero-card .icon { font-size: 40px; }
+            .section-title { font-size: 28px; }
+            .section-subtitle { font-size: 16px; }
+            .about-text { font-size: 16px; }
+            .service-card { padding: 24px; }
+            .service-card h3 { font-size: 22px; }
+            .service-icon { width: 60px; height: 60px; font-size: 30px; }
+            .service-description { font-size: 16px; }
+            .service-price-box { flex-direction: column; gap: 12px; align-items: stretch; }
+            .service-price-box .cta-button { text-align: center; }
+            .benefit-card { padding: 24px 20px; }
+            .benefits-grid { grid-template-columns: 1fr; }
+            .contact-form { padding: 24px; }
+            .contact-info-card { padding: 24px; }
+            .contact-info-grid { gap: 20px; }
+            .package-card { padding: 24px; }
+            .package-price { font-size: 26px; }
+            .packages-grid { gap: 16px; margin-top: 40px; }
+            .process-number { width: 80px; height: 80px; font-size: 32px; }
+            .process-content { padding: 20px; }
+            .process-content h4 { font-size: 20px; }
+            .process-content p { font-size: 16px; }
+            .process-step { gap: 16px; margin-bottom: 32px; }
+            .about-card { padding: 28px; }
+            .about-card h3 { font-size: 24px; }
+            .about-avatar { width: 120px; height: 120px; font-size: 48px; }
+            .mission-box { padding: 20px; }
+            .mission-box h4 { font-size: 20px; }
+            .mission-box p { font-size: 16px; }
+            .faq-question { padding: 16px 20px; }
+            .faq-question h4 { font-size: 17px; }
+            .faq-answer-content { padding: 0 20px 16px; font-size: 16px; }
+            .path-decoration { display: none; }
+            footer { padding: 40px 16px 20px; }
+            footer img { height: 50px; }
+            footer h3 { font-size: 20px; }
+            footer p { font-size: 16px; }
+        }
+
+        @media (max-width: 360px) {
+            .hero h1 { font-size: 26px; }
+            .section-title { font-size: 24px; }
+            .hero-card { padding: 24px; }
+            .service-card { padding: 20px; }
+            .process-number { width: 64px; height: 64px; font-size: 28px; }
         }
 
         /* Animations */
@@ -1006,6 +1171,7 @@
             bottom: 100px;
             right: 24px;
             width: 380px;
+            max-width: calc(100vw - 16px);
             height: 520px;
             background: #fff;
             border-radius: 20px;
@@ -1304,7 +1470,9 @@
             transform: none;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js"
+            integrity="sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS"
+            crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -1312,6 +1480,9 @@
     <nav>
         <div class="container">
             <img src="logo.png" alt="Szlak Rozwoju" id="logo">
+            <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
             <div class="nav-links">
                 <a href="#about">O nas</a>
                 <a href="#services">Usługi</a>
@@ -1371,8 +1542,7 @@
 
                 <div class="fade-in">
                     <h2 class="section-title">O gabinecie</h2>
-                    <p class="mb-24"
-                        style="font-size: 20px; line-height: 1.8; color: #4A5568; font-family: 'Source Sans Pro', sans-serif;">
+                    <p class="mb-24 about-text">
                         <strong>Mgr Dorota Kluz</strong> – socjoterapeutka, terapeutka biofeedback, trenerka
                         umiejętności społecznych, nauczycielka języka polskiego, instruktorka turystyki kwalifikowanej
                         rowerowej, kajakowej, górskiej i narciarskiej z wieloletnim doświadczeniem w pracy z
@@ -1381,8 +1551,7 @@
                         i kontrolowaniu emocji oraz nawiązywaniu satysfakcjonujących relacji z innymi.
 
                     </p>
-                    <p class="mb-24"
-                        style="font-size: 20px; line-height: 1.8; color: #4A5568; font-family: 'Source Sans Pro', sans-serif;">
+                    <p class="mb-24 about-text">
                         W Szlaku Rozwoju łączymy profesjonalną terapię z pasją do aktywności na świeżym powietrzu.
                         Współpracuję z <strong>wykwalifikowanymi trenerami</strong> sportów zimowych i wodnych, dzięki
                         czemu oferujemy nie tylko zajęcia gabinetowe, ale też wyjazdy integracyjne i obozy rozwojowe.
@@ -1406,8 +1575,7 @@
         <div class="container">
             <div class="text-center mb-80">
                 <h2 class="section-title">Nasze usługi</h2>
-                <p class="mt-24"
-                    style="font-size: 20px; color: #4A5568; max-width: 700px; margin: 24px auto 0; font-family: 'Source Sans Pro', sans-serif;">
+                <p class="mt-24 section-subtitle">
                     Oferujemy kompleksowe wsparcie w rozwoju emocjonalnym i społecznym. Wybierz formę pracy dopasowaną
                     do Twoich potrzeb.
                 </p>
@@ -1610,8 +1778,7 @@
         <div class="container">
             <div class="text-center mb-80">
                 <h2 class="section-title">Proces współpracy</h2>
-                <p class="mt-24"
-                    style="font-size: 20px; color: #4A5568; max-width: 700px; margin: 24px auto 0; font-family: 'Source Sans Pro', sans-serif;">
+                <p class="mt-24 section-subtitle">
                     Od pierwszego kontaktu do samodzielności – poznaj pięć kroków naszej wspólnej drogi
                 </p>
             </div>
@@ -1666,8 +1833,7 @@
         <div class="container" style="max-width: 1000px;">
             <div class="text-center mb-80">
                 <h2 class="section-title">Cennik</h2>
-                <p class="mt-24"
-                    style="font-size: 20px; color: #4A5568; max-width: 700px; margin: 24px auto 0; font-family: 'Source Sans Pro', sans-serif;">
+                <p class="mt-24 section-subtitle">
                     Transparentne ceny i pakiety z rabatem. Pierwsze spotkanie diagnostyczne jest bezpłatne.
                 </p>
             </div>
@@ -1775,8 +1941,7 @@
         <div class="container" style="max-width: 900px;">
             <div class="text-center mb-80">
                 <h2 class="section-title">Najczęściej zadawane pytania</h2>
-                <p class="mt-24"
-                    style="font-size: 20px; color: #4A5568; max-width: 700px; margin: 24px auto 0; font-family: 'Source Sans Pro', sans-serif;">
+                <p class="mt-24 section-subtitle">
                     Odpowiadamy na pytania, które najczęściej słyszymy od naszych klientów
                 </p>
             </div>
@@ -1920,8 +2085,7 @@
         <div class="container" style="max-width: 800px;">
             <div class="text-center mb-60">
                 <h2 class="section-title">Umów bezpłatną konsultację</h2>
-                <p class="mt-24"
-                    style="font-size: 20px; color: #4A5568; max-width: 600px; margin: 24px auto 0; font-family: 'Source Sans Pro', sans-serif;">
+                <p class="mt-24 section-subtitle">
                     Wypełnij formularz, a odezwiemy się w ciągu 24 godzin. Pierwsze spotkanie diagnostyczne jest
                     bezpłatne.
                 </p>
@@ -2119,8 +2283,8 @@
                 data[key] = value;
             });
 
-            console.log('Form data:', data);
-            alert('Formularz wysłany! (W wersji produkcyjnej zostanie podłączony backend/n8n)\n\nTwoje dane:\n' + JSON.stringify(data, null, 2));
+            console.log('Formularz wysłany');
+            alert('Dziękujemy! Formularz został wysłany. Skontaktujemy się wkrótce.');
 
             // Reset form
             this.reset();
@@ -2305,6 +2469,10 @@
             var chatInitialized = false;
 
             function formatMessage(text) {
+                text = String(text);
+                text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                           .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+                           .replace(/'/g, '&#39;');
                 return text
                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                     .replace(/~~(.*?)~~/g, '<del>$1</del>')
@@ -2502,6 +2670,26 @@
                     e.preventDefault();
                     handleTextInput();
                 }
+            });
+        })();
+
+        // Hamburger Menu
+        (function() {
+            var hamburger = document.getElementById('hamburger');
+            var navLinks = document.querySelector('.nav-links');
+            if (!hamburger || !navLinks) return;
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navLinks.classList.toggle('open');
+                this.setAttribute('aria-expanded', navLinks.classList.contains('open'));
+                document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+            });
+            navLinks.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    hamburger.classList.remove('active');
+                    navLinks.classList.remove('open');
+                    document.body.style.overflow = '';
+                });
             });
         })();
     </script>

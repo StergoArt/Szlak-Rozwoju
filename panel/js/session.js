@@ -90,15 +90,24 @@ var Session = {
                 var timeStr = apt.start_time ? apt.start_time.substring(0, 5) : '';
                 if (info) info.textContent = dayStr + (timeStr ? ', godz. ' + timeStr : '');
 
+                // Walidacja meeting_url (whitelist domeny)
+                var meetingUrlValid = false;
+                if (apt.meeting_url) {
+                    try {
+                        var parsedUrl = new URL(apt.meeting_url);
+                        meetingUrlValid = parsedUrl.protocol === 'https:' && parsedUrl.hostname === 'meet.jit.si';
+                    } catch (e) { meetingUrlValid = false; }
+                }
+
                 // Link zewnętrzny
                 var extLink = document.getElementById('sessionExternalLink');
-                if (extLink && apt.meeting_url) {
+                if (extLink && meetingUrlValid) {
                     extLink.href = apt.meeting_url;
                 }
 
                 // Mobile fallback — otwórz w nowej karcie
                 if (window.innerWidth < 768) {
-                    if (apt.meeting_url) {
+                    if (meetingUrlValid) {
                         window.open(apt.meeting_url, '_blank');
                     }
                     if (info) info.textContent = 'Sesja otwarta w nowej karcie. ' + (info.textContent || '');

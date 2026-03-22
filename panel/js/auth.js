@@ -12,6 +12,11 @@ const Auth = {
                 // Obsługiwane w panel.html — pomijamy, żeby uniknąć podwójnego przetwarzania
                 return;
             }
+            if (event === 'PASSWORD_RECOVERY' && session) {
+                this.currentUser = session.user;
+                Router.navigate('#/reset-password');
+                return;
+            }
             if (event === 'SIGNED_IN' && session) {
                 this.onSignIn(session);
             } else if (event === 'SIGNED_OUT') {
@@ -46,6 +51,22 @@ const Auth = {
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => this.logout());
         }
+
+        const forgotForm = document.getElementById('forgotForm');
+        if (forgotForm) {
+            forgotForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.forgotPassword();
+            });
+        }
+
+        const resetForm = document.getElementById('resetForm');
+        if (resetForm) {
+            resetForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.resetPassword();
+            });
+        }
     },
 
     async login() {
@@ -77,8 +98,8 @@ const Auth = {
 
         this.hideAlert(alert);
 
-        if (password.length < 6) {
-            this.showAlert(alert, 'error', 'Hasło musi mieć co najmniej 6 znaków.');
+        if (password.length < 8) {
+            this.showAlert(alert, 'error', 'Hasło musi mieć co najmniej 8 znaków.');
             return;
         }
 
@@ -101,10 +122,79 @@ const Auth = {
             this.showAlert(alert, 'error', this.translateError(error.message));
             return;
         }
+
+        // Email confirmation włączone — pokaż komunikat zamiast automatycznego logowania
+        this.showAlert(alert, 'success',
+            'Konto zostało utworzone! Sprawdź skrzynkę email (również folder spam) i kliknij link potwierdzający, aby aktywować konto.');
     },
 
     async logout() {
         await supabase.auth.signOut();
+    },
+
+    async forgotPassword() {
+        const email = document.getElementById('forgotEmail').value.trim();
+        const btn = document.getElementById('forgotBtn');
+        const alert = document.getElementById('forgotAlert');
+
+        this.hideAlert(alert);
+        if (!email) {
+            this.showAlert(alert, 'error', 'Podaj adres email.');
+            return;
+        }
+
+        this.setLoading(btn, true);
+
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: 'https://szlak-rozwoju.pl/panel.html#/reset-password'
+        });
+
+        this.setLoading(btn, false);
+
+        // Łap realne błędy (429 Rate Limit, server errors)
+        // Anti-enumeration wbudowane w Supabase — nieistniejące emaile zwracają sukces
+        if (error) {
+            this.showAlert(alert, 'error', this.translateError(error.message));
+            return;
+        }
+
+        this.showAlert(alert, 'success',
+            'Jeśli konto z tym adresem istnieje, wysłaliśmy link do resetowania hasła. Sprawdź skrzynkę email (również folder spam).');
+    },
+
+    async resetPassword() {
+        const password = document.getElementById('resetPassword').value;
+        const passwordConfirm = document.getElementById('resetPasswordConfirm').value;
+        const btn = document.getElementById('resetBtn');
+        const alert = document.getElementById('resetAlert');
+
+        this.hideAlert(alert);
+
+        if (password.length < 8) {
+            this.showAlert(alert, 'error', 'Hasło musi mieć co najmniej 8 znaków.');
+            return;
+        }
+        if (password !== passwordConfirm) {
+            this.showAlert(alert, 'error', 'Hasła nie są identyczne.');
+            return;
+        }
+
+        this.setLoading(btn, true);
+
+        const { error } = await supabase.auth.updateUser({ password });
+
+        this.setLoading(btn, false);
+
+        if (error) {
+            this.showAlert(alert, 'error', this.translateError(error.message));
+            return;
+        }
+
+        // Pokaż sukces, potem wyloguj sesję recovery po 2s
+        this.showAlert(alert, 'success', 'Hasło zostało zmienione. Za chwilę zostaniesz przekierowany do logowania.');
+        setTimeout(function () {
+            supabase.auth.signOut(); // → onSignOut() → navigate #/login
+        }, 2000);
     },
 
     async onSignIn(session) {
@@ -212,10 +302,12 @@ const Auth = {
     translateError(msg) {
         var translations = {
             'Invalid login credentials': 'Nieprawidłowy email lub hasło.',
-            'User already registered': 'Konto z tym adresem email już istnieje.',
-            'Password should be at least 6 characters': 'Hasło musi mieć co najmniej 6 znaków.',
+            'User already registered': 'Rejestracja nie powiodła się. Sprawdź dane i spróbuj ponownie.',
+            'Password should be at least 6 characters': 'Hasło musi mieć co najmniej 8 znaków.',
             'Unable to validate email address: invalid format': 'Nieprawidłowy format adresu email.',
             'Email rate limit exceeded': 'Zbyt wiele prób. Spróbuj ponownie za chwilę.',
+            'New password should be different from the old password': 'Nowe hasło musi się różnić od poprzedniego.',
+            'For security purposes, you can only request this once every 60 seconds': 'Ze względów bezpieczeństwa możesz wysłać żądanie raz na 60 sekund.',
         };
         return translations[msg] || ('Wystąpił błąd: ' + msg);
     }

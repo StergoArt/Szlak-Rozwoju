@@ -10,6 +10,8 @@ var Schedule = {
     _mobileDay: 0,
     _bookingAppointmentId: null,
     _clients: [],
+    _clientsLoaded: false,
+    _therapistId: null,
 
     // Stałe
     STATUS_LABELS: {
@@ -18,7 +20,8 @@ var Schedule = {
         confirmed: 'Potwierdzony',
         cancelled_by_therapist: 'Odwołany',
         cancelled_by_client: 'Odwołany przez klienta',
-        completed: 'Zrealizowany'
+        completed: 'Zrealizowany',
+        requested: 'Propozycja'
     },
     STATUS_CSS: {
         available: 'status-available',
@@ -26,7 +29,8 @@ var Schedule = {
         confirmed: 'status-confirmed',
         cancelled_by_therapist: 'status-cancelled',
         cancelled_by_client: 'status-cancelled',
-        completed: 'status-completed'
+        completed: 'status-completed',
+        requested: 'status-requested'
     },
     SERVICE_LABELS: {
         socjoterapia_indywidualna: 'Socjoterapia indywidualna',
@@ -83,6 +87,14 @@ var Schedule = {
             });
         }
 
+        // Slot form: toggle trybu (pojedynczy / zakres)
+        var modeRadios = document.querySelectorAll('input[name="slotMode"]');
+        for (var mr = 0; mr < modeRadios.length; mr++) {
+            modeRadios[mr].addEventListener('change', function () {
+                self.toggleSlotMode(this.value);
+            });
+        }
+
         // Slot form: submit/cancel
         var slotForm = document.getElementById('slotForm');
         if (slotForm) {
@@ -112,6 +124,24 @@ var Schedule = {
         if (bookDialog) {
             bookDialog.querySelector('.booking-dialog-backdrop').addEventListener('click', function () {
                 self.hideBookingDialog();
+            });
+        }
+
+        // Request form (klient — propozycja terminu)
+        var requestBtn = document.getElementById('requestAppointmentBtn');
+        if (requestBtn) requestBtn.addEventListener('click', function () { self.showRequestForm(); });
+
+        var requestForm = document.getElementById('requestForm');
+        if (requestForm) {
+            requestForm.addEventListener('submit', function (e) { e.preventDefault(); self.submitRequest(); });
+        }
+        var requestCancel = document.getElementById('requestFormCancelBtn');
+        if (requestCancel) requestCancel.addEventListener('click', function () { self.hideRequestForm(); });
+
+        var requestModal = document.getElementById('requestFormModal');
+        if (requestModal) {
+            requestModal.querySelector('.booking-dialog-backdrop').addEventListener('click', function () {
+                self.hideRequestForm();
             });
         }
 
@@ -146,6 +176,7 @@ var Schedule = {
                     return;
                 }
                 self._clients = result.data || [];
+                self._clientsLoaded = true;
             }).catch(function (err) {
                 console.error('Błąd ładowania klientów:', err);
             });
@@ -156,16 +187,23 @@ var Schedule = {
         var title = document.getElementById('scheduleTitle');
         var actions = document.getElementById('scheduleActions');
         var myAppts = document.getElementById('myAppointments');
+        var clientRequest = document.getElementById('clientRequestSection');
 
         if (Auth.isTherapist()) {
             if (title) title.textContent = 'Grafik wizyt';
             if (actions) actions.style.display = 'flex';
             if (myAppts) myAppts.style.display = 'none';
+            if (clientRequest) clientRequest.style.display = 'none';
+            if (!this._clientsLoaded) {
+                this.loadClients();
+            }
         } else {
             if (title) title.textContent = 'Rezerwacja wizyty';
             if (actions) actions.style.display = 'none';
             if (myAppts) myAppts.style.display = 'block';
+            if (clientRequest) clientRequest.style.display = '';
             this.loadMyAppointments();
+            this.loadTherapistId();
         }
 
         this.goToWeek(this.weekOffset);
@@ -268,7 +306,7 @@ var Schedule = {
             .select('*, session_notes:notes!notes_appointment_id_fkey(id, title)')
             .eq('client_id', Auth.currentUser.id)
             .gte('slot_date', todayStr)
-            .in('status', ['booked', 'confirmed'])
+            .in('status', ['booked', 'confirmed', 'requested'])
             .order('slot_date', { ascending: true })
             .order('start_time', { ascending: true })
             .then(function (result) {
@@ -474,6 +512,9 @@ var Schedule = {
             } else if (apt.status === 'confirmed' && !isPast) {
                 actions.appendChild(this.createActionBtn('Odwo\u0142aj', 'cancel-therapist', apt.id, 'btn-slot-delete', 'wizyt\u0119 ' + timeCtx));
                 actions.appendChild(this.createActionBtn('Zrealizowana', 'complete', apt.id, '', 'wizyta ' + timeCtx));
+            } else if (apt.status === 'requested') {
+                actions.appendChild(this.createActionBtn('Akceptuj', 'accept-request', apt.id, 'btn-slot-confirm', 'propozycj\u0119 ' + timeCtx));
+                actions.appendChild(this.createActionBtn('Odrzu\u0107', 'reject-request', apt.id, 'btn-slot-delete', 'propozycj\u0119 ' + timeCtx));
             }
         } else {
             if (apt.status === 'available' && !isPast && !this.isSlotPastTime(apt)) {
@@ -541,14 +582,21 @@ var Schedule = {
             case 'cancel-therapist': this.cancelAppointment(id); break;
             case 'complete': this.completeAppointment(id); break;
             case 'book': this.showBookingDialog(id); break;
+            case 'accept-request': this.acceptRequest(id); break;
+            case 'reject-request': this.rejectRequest(id); break;
         }
     },
 
     handleMyAppointmentsClick: function (e) {
-        var btn = e.target.closest('[data-action="cancel-my"]');
+        var btn = e.target.closest('[data-action="cancel-my"], [data-action="cancel-request"]');
         if (!btn) return;
+        var action = btn.getAttribute('data-action');
         var id = btn.getAttribute('data-id');
-        this.cancelMyBooking(id);
+        if (action === 'cancel-request') {
+            this.cancelMyRequest(id);
+        } else {
+            this.cancelMyBooking(id);
+        }
     },
 
     // ===== Terapeuta: CRUD slotów =====
@@ -598,7 +646,33 @@ var Schedule = {
         var countInput = document.getElementById('slotRepeatCount');
         if (countInput) countInput.value = '4';
 
+        // Reset trybu na "Pojedynczy termin"
+        var slotModeRadios = document.querySelectorAll('input[name="slotMode"]');
+        for (var mi2 = 0; mi2 < slotModeRadios.length; mi2++) {
+            slotModeRadios[mi2].checked = slotModeRadios[mi2].value === 'single';
+        }
+        this.toggleSlotMode('single');
+
         modal.style.display = 'flex';
+    },
+
+    toggleSlotMode: function (mode) {
+        var rangeEndGroup = document.getElementById('slotRangeEndGroup');
+        var durationGroup = document.getElementById('slotDurationGroup');
+        var rangeDurationGroup = document.getElementById('slotRangeDurationGroup');
+        var breakGroup = document.getElementById('slotBreakGroup');
+
+        if (mode === 'range') {
+            if (rangeEndGroup) rangeEndGroup.style.display = '';
+            if (durationGroup) durationGroup.style.display = 'none';
+            if (rangeDurationGroup) rangeDurationGroup.style.display = '';
+            if (breakGroup) breakGroup.style.display = '';
+        } else {
+            if (rangeEndGroup) rangeEndGroup.style.display = 'none';
+            if (durationGroup) durationGroup.style.display = '';
+            if (rangeDurationGroup) rangeDurationGroup.style.display = 'none';
+            if (breakGroup) breakGroup.style.display = 'none';
+        }
     },
 
     hideSlotForm: function () {
@@ -620,23 +694,24 @@ var Schedule = {
             return;
         }
 
+        // Sprawdź tryb: pojedynczy vs zakres
+        var isRangeMode = false;
+        var modeRadio = document.querySelector('input[name="slotMode"]:checked');
+        if (modeRadio && modeRadio.value === 'range') isRangeMode = true;
+
         var durationVal = 50;
-        var radios = document.querySelectorAll('input[name="slotDuration"]');
-        for (var i = 0; i < radios.length; i++) {
-            if (radios[i].checked) { durationVal = parseInt(radios[i].value); break; }
+        if (isRangeMode) {
+            var rangeDurSelect = document.getElementById('slotRangeDuration');
+            durationVal = rangeDurSelect ? parseInt(rangeDurSelect.value) : 50;
+        } else {
+            var radios = document.querySelectorAll('input[name="slotDuration"]');
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i].checked) { durationVal = parseInt(radios[i].value); break; }
+            }
         }
 
-        // Oblicz end_time
         var parts = startTimeVal.split(':');
         var startMinutes = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-        var endMinutes = startMinutes + durationVal;
-        var endH = Math.floor(endMinutes / 60);
-        var endM = endMinutes % 60;
-        if (endH >= 24) {
-            this.showSlotAlert('Termin wykracza poza dzie\u0144.');
-            return;
-        }
-        var endTimeVal = String(endH).padStart(2, '0') + ':' + String(endM).padStart(2, '0');
 
         var serviceSelect = document.getElementById('slotServiceType');
         var serviceVal = serviceSelect ? serviceSelect.value : '';
@@ -649,9 +724,9 @@ var Schedule = {
 
         // Odczyt trybu sesji
         var sessionMode = 'in_person';
-        var modeRadios = document.querySelectorAll('input[name="slotSessionMode"]');
-        for (var mi = 0; mi < modeRadios.length; mi++) {
-            if (modeRadios[mi].checked) { sessionMode = modeRadios[mi].value; break; }
+        var sessionModeRadios = document.querySelectorAll('input[name="slotSessionMode"]');
+        for (var mi = 0; mi < sessionModeRadios.length; mi++) {
+            if (sessionModeRadios[mi].checked) { sessionMode = sessionModeRadios[mi].value; break; }
         }
 
         var repeatCb = document.getElementById('slotRepeat');
@@ -663,28 +738,89 @@ var Schedule = {
 
         var slotStatus = clientId ? 'booked' : 'available';
 
+        // Generowanie slotów
+        var timeSlots = [];
+        if (isRangeMode) {
+            var rangeEndInput = document.getElementById('slotRangeEndTime');
+            var rangeEndVal = rangeEndInput ? rangeEndInput.value : '';
+            if (!rangeEndVal) {
+                this.showSlotAlert('Podaj godzin\u0119 ko\u0144cow\u0105 zakresu.');
+                return;
+            }
+            var rangeEndParts = rangeEndVal.split(':');
+            var rangeEndMinutes = parseInt(rangeEndParts[0]) * 60 + parseInt(rangeEndParts[1]);
+            var breakSelect = document.getElementById('slotBreakTime');
+            var breakMinutes = breakSelect ? parseInt(breakSelect.value) : 0;
+            var step = durationVal + breakMinutes;
+
+            if (rangeEndMinutes <= startMinutes) {
+                this.showSlotAlert('Godzina ko\u0144cowa musi by\u0107 p\u00F3\u017Aniejsza ni\u017C pocz\u0105tkowa.');
+                return;
+            }
+
+            for (var cursor = startMinutes; cursor + durationVal <= rangeEndMinutes; cursor += step) {
+                var sH = Math.floor(cursor / 60);
+                var sM = cursor % 60;
+                var eH = Math.floor((cursor + durationVal) / 60);
+                var eM = (cursor + durationVal) % 60;
+                if (eH >= 24) break;
+                timeSlots.push({
+                    start: String(sH).padStart(2, '0') + ':' + String(sM).padStart(2, '0'),
+                    end: String(eH).padStart(2, '0') + ':' + String(eM).padStart(2, '0')
+                });
+            }
+
+            if (timeSlots.length === 0) {
+                this.showSlotAlert('Zakres jest za kr\u00F3tki dla wybranej d\u0142ugo\u015Bci sesji.');
+                return;
+            }
+        } else {
+            // Tryb pojedynczy — jeden slot
+            var endMinutes = startMinutes + durationVal;
+            var endH = Math.floor(endMinutes / 60);
+            var endM = endMinutes % 60;
+            if (endH >= 24) {
+                this.showSlotAlert('Termin wykracza poza dzie\u0144.');
+                return;
+            }
+            timeSlots.push({
+                start: startTimeVal,
+                end: String(endH).padStart(2, '0') + ':' + String(endM).padStart(2, '0')
+            });
+        }
+
+        // Walidacja: max 50 rekordów
+        var totalRecords = timeSlots.length * repeatCount;
+        if (totalRecords > 50) {
+            this.showSlotAlert('Za du\u017Co termin\u00F3w (' + totalRecords + '). Maksymalnie 50 na raz.');
+            return;
+        }
+
         var records = [];
         for (var w = 0; w < repeatCount; w++) {
             var slotDate = this.addDays(this.parseLocalDate(dateVal), w * 7);
-            var recordId = this.generateUUID();
-            var record = {
-                id: recordId,
-                slot_date: this.formatDateForDB(slotDate),
-                start_time: startTimeVal + ':00',
-                end_time: endTimeVal + ':00',
-                duration_minutes: durationVal,
-                status: slotStatus,
-                therapist_id: Auth.currentUser.id,
-                service_type: serviceVal || null,
-                client_id: clientId,
-                notes: notesVal,
-                session_mode: sessionMode,
-                meeting_url: (sessionMode === 'online') ? this.generateMeetingUrl(recordId) : null
-            };
-            if (clientId) {
-                record.booked_at = new Date().toISOString();
+            for (var t = 0; t < timeSlots.length; t++) {
+                var ts = timeSlots[t];
+                var recordId = this.generateUUID();
+                var record = {
+                    id: recordId,
+                    slot_date: this.formatDateForDB(slotDate),
+                    start_time: ts.start + ':00',
+                    end_time: ts.end + ':00',
+                    duration_minutes: durationVal,
+                    status: slotStatus,
+                    therapist_id: Auth.currentUser.id,
+                    service_type: serviceVal || null,
+                    client_id: clientId,
+                    notes: notesVal,
+                    session_mode: sessionMode,
+                    meeting_url: (sessionMode === 'online') ? this.generateMeetingUrl(recordId) : null
+                };
+                if (clientId) {
+                    record.booked_at = new Date().toISOString();
+                }
+                records.push(record);
             }
-            records.push(record);
         }
 
         if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Zapisywanie...'; }
@@ -697,7 +833,9 @@ var Schedule = {
                 if (result.error) {
                     var msg = 'B\u0142\u0105d zapisu.';
                     if (result.error.code === '23514' || (result.error.message && result.error.message.indexOf('overlap') !== -1)) {
-                        msg = 'Termin nak\u0142ada si\u0119 z istniej\u0105cym.';
+                        msg = isRangeMode
+                            ? 'Nie mo\u017Cna utworzy\u0107 zakresu: przynajmniej jeden z termin\u00F3w koliduje z istniej\u0105cym grafikiem.'
+                            : 'Termin nak\u0142ada si\u0119 z istniej\u0105cym.';
                     }
                     self.showSlotAlert(msg);
                     return;
@@ -776,7 +914,7 @@ var Schedule = {
         var toCopy = [];
         for (var i = 0; i < this.appointments.length; i++) {
             var s = this.appointments[i].status;
-            if (s !== 'cancelled_by_therapist' && s !== 'cancelled_by_client') {
+            if (s !== 'cancelled_by_therapist' && s !== 'cancelled_by_client' && s !== 'requested') {
                 toCopy.push(this.appointments[i]);
             }
         }
@@ -1035,6 +1173,9 @@ var Schedule = {
             } else if (apt.status === 'confirmed') {
                 statusBadge.classList.add('status-badge-confirmed');
                 statusBadge.textContent = 'Potwierdzona';
+            } else if (apt.status === 'requested') {
+                statusBadge.classList.add('status-badge-requested');
+                statusBadge.textContent = 'Propozycja';
             }
             card.appendChild(statusBadge);
 
@@ -1054,7 +1195,18 @@ var Schedule = {
                 }
             }
 
-            if (!this.isSlotPastTime(apt)) {
+            if (apt.status === 'requested') {
+                // Propozycja — klient może anulować
+                var cancelReqBtn = document.createElement('button');
+                cancelReqBtn.className = 'btn-secondary btn-sm';
+                cancelReqBtn.textContent = 'Anuluj propozycj\u0119';
+                cancelReqBtn.setAttribute('data-action', 'cancel-request');
+                cancelReqBtn.setAttribute('data-id', apt.id);
+                cancelReqBtn.style.width = 'auto';
+                cancelReqBtn.style.padding = '6px 16px';
+                cancelReqBtn.style.fontSize = '13px';
+                card.appendChild(cancelReqBtn);
+            } else if (!this.isSlotPastTime(apt)) {
                 var cancelBtn = document.createElement('button');
                 cancelBtn.className = 'btn-secondary btn-sm';
                 cancelBtn.textContent = 'Odwo\u0142aj';
@@ -1136,5 +1288,227 @@ var Schedule = {
 
     generateMeetingUrl: function (appointmentId) {
         return 'https://meet.jit.si/szlak-rozwoju-' + appointmentId;
+    },
+
+    // ===== Propozycje terminów (klient) =====
+    showRequestForm: function () {
+        var modal = document.getElementById('requestFormModal');
+        if (!modal) return;
+        var dateInput = document.getElementById('requestDate');
+        var timeInput = document.getElementById('requestTime');
+        var alertEl = document.getElementById('requestFormAlert');
+
+        if (alertEl) { alertEl.style.display = 'none'; alertEl.textContent = ''; }
+        if (dateInput) dateInput.value = this.formatDateForDB(new Date());
+        if (timeInput) timeInput.value = '10:00';
+        var radios = document.querySelectorAll('input[name="requestDuration"]');
+        for (var i = 0; i < radios.length; i++) {
+            radios[i].checked = radios[i].value === '50';
+        }
+        var serviceSelect = document.getElementById('requestServiceType');
+        if (serviceSelect) serviceSelect.value = '';
+        var notesTextarea = document.getElementById('requestNotes');
+        if (notesTextarea) notesTextarea.value = '';
+
+        modal.style.display = 'flex';
+    },
+
+    hideRequestForm: function () {
+        var modal = document.getElementById('requestFormModal');
+        if (modal) modal.style.display = 'none';
+    },
+
+    showRequestAlert: function (msg) {
+        var alertEl = document.getElementById('requestFormAlert');
+        if (alertEl) {
+            alertEl.textContent = msg;
+            alertEl.style.display = 'block';
+            alertEl.classList.add('visible');
+        }
+    },
+
+    submitRequest: function () {
+        var self = this;
+        var dateInput = document.getElementById('requestDate');
+        var timeInput = document.getElementById('requestTime');
+        var saveBtn = document.getElementById('requestFormSaveBtn');
+
+        var dateVal = dateInput ? dateInput.value : '';
+        var startTimeVal = timeInput ? timeInput.value : '';
+
+        if (!dateVal || !startTimeVal) {
+            this.showRequestAlert('Podaj dat\u0119 i godzin\u0119.');
+            return;
+        }
+
+        // Walidacja: nie pozwól na daty z przeszłości
+        var todayStr = this.formatDateForDB(new Date());
+        if (dateVal < todayStr) {
+            this.showRequestAlert('Nie mo\u017Cna zaproponowa\u0107 terminu w przesz\u0142o\u015Bci.');
+            return;
+        }
+
+        var durationVal = 50;
+        var radios = document.querySelectorAll('input[name="requestDuration"]');
+        for (var i = 0; i < radios.length; i++) {
+            if (radios[i].checked) { durationVal = parseInt(radios[i].value); break; }
+        }
+
+        var parts = startTimeVal.split(':');
+        var startMinutes = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        var endMinutes = startMinutes + durationVal;
+        var endH = Math.floor(endMinutes / 60);
+        var endM = endMinutes % 60;
+        if (endH >= 24) {
+            this.showRequestAlert('Termin wykracza poza dzie\u0144.');
+            return;
+        }
+        var endTimeVal = String(endH).padStart(2, '0') + ':' + String(endM).padStart(2, '0');
+
+        var serviceSelect = document.getElementById('requestServiceType');
+        var serviceVal = serviceSelect ? serviceSelect.value : '';
+        var notesTextarea = document.getElementById('requestNotes');
+        var notesVal = notesTextarea ? notesTextarea.value.trim() : '';
+
+        function doSubmit() {
+            if (!self._therapistId) {
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Wy\u015Blij propozycj\u0119'; }
+                self.showRequestAlert('Nie uda\u0142o si\u0119 pobra\u0107 danych terapeuty. Spr\u00F3buj ponownie.');
+                return;
+            }
+            var record = {
+                id: self.generateUUID(),
+                slot_date: dateVal,
+                start_time: startTimeVal + ':00',
+                end_time: endTimeVal + ':00',
+                duration_minutes: durationVal,
+                status: 'requested',
+                therapist_id: self._therapistId,
+                client_id: Auth.currentUser.id,
+                service_type: serviceVal || null,
+                notes: notesVal,
+                session_mode: 'in_person',
+                meeting_url: null
+            };
+
+            supabase
+                .from('appointments')
+                .insert([record])
+                .then(function (result) {
+                    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Wy\u015Blij propozycj\u0119'; }
+                    if (result.error) {
+                        self.showRequestAlert('Nie uda\u0142o si\u0119 wys\u0142a\u0107 propozycji.');
+                        console.error(result.error);
+                        return;
+                    }
+                    self.hideRequestForm();
+                    self.loadWeekAppointments();
+                    self.loadMyAppointments();
+                }).catch(function (err) {
+                    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Wy\u015Blij propozycj\u0119'; }
+                    console.error('Błąd wysyłania propozycji:', err);
+                    self.showRequestAlert('Wyst\u0105pi\u0142 b\u0142\u0105d po\u0142\u0105czenia.');
+                });
+        }
+
+        if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Wysy\u0142anie...'; }
+
+        if (!this._therapistId) {
+            // Fallback: pobierz w locie przed INSERT
+            supabase.from('profiles').select('id').eq('role', 'therapist').limit(1)
+                .then(function (r) {
+                    if (r.data && r.data.length) self._therapistId = r.data[0].id;
+                    doSubmit();
+                }).catch(function () {
+                    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Wy\u015Blij propozycj\u0119'; }
+                    self.showRequestAlert('Wyst\u0105pi\u0142 b\u0142\u0105d po\u0142\u0105czenia.');
+                });
+        } else {
+            doSubmit();
+        }
+    },
+
+    // ===== Akceptacja / odrzucenie propozycji (terapeuta) =====
+    acceptRequest: function (id) {
+        var self = this;
+        if (!confirm('Zaakceptowa\u0107 t\u0119 propozycj\u0119 terminu?')) return;
+        supabase
+            .from('appointments')
+            .update({ status: 'confirmed', booked_at: new Date().toISOString() })
+            .eq('id', id)
+            .then(function (result) {
+                if (result.error) {
+                    if (result.error.message && result.error.message.indexOf('overlap') !== -1) {
+                        alert('Nie mo\u017Cna zaakceptowa\u0107 \u2014 istniej\u0105cy termin koliduje z propozycj\u0105. '
+                            + 'Usu\u0144 koliduj\u0105cy wolny termin i spr\u00F3buj ponownie.');
+                    } else {
+                        alert('Nie uda\u0142o si\u0119 zaakceptowa\u0107 propozycji.');
+                    }
+                    console.error(result.error);
+                    return;
+                }
+                self.loadWeekAppointments();
+            }).catch(function (err) {
+                console.error('Błąd akceptacji:', err);
+            });
+    },
+
+    rejectRequest: function (id) {
+        if (!confirm('Odrzuci\u0107 t\u0119 propozycj\u0119 terminu?')) return;
+        var self = this;
+        supabase
+            .from('appointments')
+            .delete()
+            .eq('id', id)
+            .then(function (result) {
+                if (result.error) {
+                    alert('Nie uda\u0142o si\u0119 odrzuci\u0107 propozycji.');
+                    console.error(result.error);
+                    return;
+                }
+                self.loadWeekAppointments();
+            }).catch(function (err) {
+                console.error('Błąd odrzucenia:', err);
+            });
+    },
+
+    // ===== Anulowanie propozycji przez klienta =====
+    cancelMyRequest: function (id) {
+        if (!confirm('Anulowa\u0107 propozycj\u0119 terminu?')) return;
+        var self = this;
+        supabase
+            .from('appointments')
+            .delete()
+            .eq('id', id)
+            .then(function (result) {
+                if (result.error) {
+                    alert('Nie uda\u0142o si\u0119 anulowa\u0107 propozycji.');
+                    console.error(result.error);
+                    return;
+                }
+                self.loadMyAppointments();
+                self.loadWeekAppointments();
+            }).catch(function (err) {
+                console.error('Błąd anulowania propozycji:', err);
+            });
+    },
+
+    // ===== Ładowanie ID terapeuty (cache, dla klientów) =====
+    loadTherapistId: function () {
+        if (this._therapistId) return;
+        var self = this;
+        // Założenie: jeden terapeuta w systemie (Dorota Kluz)
+        supabase
+            .from('profiles')
+            .select('id')
+            .eq('role', 'therapist')
+            .limit(1)
+            .then(function (result) {
+                if (result.data && result.data.length) {
+                    self._therapistId = result.data[0].id;
+                }
+            }).catch(function (err) {
+                console.error('Błąd ładowania ID terapeuty:', err);
+            });
     }
 };
