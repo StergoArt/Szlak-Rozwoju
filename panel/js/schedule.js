@@ -22,6 +22,7 @@ var Schedule = {
     _monthCacheTime: 0,
     _suppressMobileDayReset: false,
     _pendingInterval: null,
+    _hashChangeCleanup: null,
     _acceptRequestId: null,
     _acceptRequestIsConfirm: false,
 
@@ -308,21 +309,26 @@ var Schedule = {
             // Badge & polling
             this.updatePendingCount();
             if (this._pendingInterval) clearInterval(this._pendingInterval);
+            if (this._hashChangeCleanup) {
+                window.removeEventListener('hashchange', this._hashChangeCleanup);
+                this._hashChangeCleanup = null;
+            }
             var self = this;
             this._pendingInterval = setInterval(function() {
                 self.updatePendingCount();
             }, 60000);
             // Cleanup polling when leaving schedule view
-            var onHashChange = function() {
+            this._hashChangeCleanup = function() {
                 if (window.location.hash.indexOf('#/schedule') !== 0) {
                     if (self._pendingInterval) {
                         clearInterval(self._pendingInterval);
                         self._pendingInterval = null;
                     }
-                    window.removeEventListener('hashchange', onHashChange);
+                    window.removeEventListener('hashchange', self._hashChangeCleanup);
+                    self._hashChangeCleanup = null;
                 }
             };
-            window.addEventListener('hashchange', onHashChange);
+            window.addEventListener('hashchange', this._hashChangeCleanup);
         } else {
             if (title) title.textContent = 'Rezerwacja wizyty';
             if (actions) actions.style.display = 'none';
@@ -1467,6 +1473,14 @@ var Schedule = {
         return div.innerHTML;
     },
 
+    polishPlural: function (n, one, few, many) {
+        if (n === 1) return one;
+        var mod10 = n % 10;
+        var mod100 = n % 100;
+        if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+        return many;
+    },
+
     generateUUID: function () {
         if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -1986,7 +2000,7 @@ var Schedule = {
             var countDiv = document.createElement('div');
             countDiv.className = 'month-day-count';
             var total = apts.length;
-            countDiv.textContent = total + ' ' + (total === 1 ? 'wizyta' : total < 5 ? 'wizyty' : 'wizyt');
+            countDiv.textContent = total + ' ' + this.polishPlural(total, 'wizyta', 'wizyty', 'wizyt');
             container.appendChild(countDiv);
 
             // Status dots
@@ -2011,10 +2025,10 @@ var Schedule = {
             }
             if (available > 0 || own > 0) {
                 var text = '';
-                if (available > 0) text += available + ' woln' + (available === 1 ? 'y' : available < 5 ? 'e' : 'ych');
+                if (available > 0) text += available + ' ' + this.polishPlural(available, 'wolny', 'wolne', 'wolnych');
                 if (own > 0) {
                     if (text) text += ', ';
-                    text += own + ' Twoj' + (own === 1 ? 'a' : own < 5 ? 'e' : 'ich');
+                    text += own + ' ' + this.polishPlural(own, 'Twoja', 'Twoje', 'Twoich');
                 }
                 container.textContent = text;
             } else {
@@ -2040,12 +2054,9 @@ var Schedule = {
             this._mobileDay = this.getDayIndex(clickedDate);
         }
 
+        // Set weekOffset BEFORE switchView so it loads the correct week in one call
+        this.weekOffset = newWeekOffset;
         this.switchView('week');
-        // switchView calls goToWeek which calls renderWeekGrid
-        // But we need to recalculate since switchView uses this.weekOffset
-        if (newWeekOffset !== this.weekOffset) {
-            this.goToWeek(newWeekOffset);
-        }
 
         // On mobile, force the correct day after render
         if (this.isMobile()) {
