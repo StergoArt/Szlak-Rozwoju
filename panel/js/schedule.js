@@ -23,6 +23,7 @@ var Schedule = {
     _suppressMobileDayReset: false,
     _pendingInterval: null,
     _acceptRequestId: null,
+    _acceptRequestIsConfirm: false,
 
     // Stałe
     STATUS_LABELS: {
@@ -201,15 +202,40 @@ var Schedule = {
                 }
                 var dialog = document.getElementById('acceptRequestDialog');
                 if (dialog) dialog.style.display = 'none';
+
+                // Reset dialog title
+                var titleEl = document.getElementById('acceptRequestTitle');
+                if (titleEl) titleEl.textContent = 'Akceptacja propozycji';
+
                 if (self._acceptRequestId) {
-                    self.doAcceptRequest(self._acceptRequestId, sessionMode);
+                    if (self._acceptRequestIsConfirm) {
+                        // Confirm flow: build update data with session mode
+                        var updateData = { status: 'confirmed' };
+                        var apt = self.findAppointment(self._acceptRequestId);
+                        if (apt && apt.session_mode !== sessionMode) {
+                            updateData.session_mode = sessionMode;
+                            if (sessionMode === 'online') {
+                                updateData.meeting_url = self.generateMeetingUrl(self._acceptRequestId);
+                            } else {
+                                updateData.meeting_url = null;
+                            }
+                        }
+                        self.updateAppointment(self._acceptRequestId, updateData);
+                    } else {
+                        // Accept request flow
+                        self.doAcceptRequest(self._acceptRequestId, sessionMode);
+                    }
                 }
+                self._acceptRequestIsConfirm = false;
             });
         }
         if (acceptCancelBtn) {
             acceptCancelBtn.addEventListener('click', function () {
                 var dialog = document.getElementById('acceptRequestDialog');
                 if (dialog) dialog.style.display = 'none';
+                self._acceptRequestIsConfirm = false;
+                var titleEl = document.getElementById('acceptRequestTitle');
+                if (titleEl) titleEl.textContent = 'Akceptacja propozycji';
             });
         }
         // Close on backdrop click
@@ -217,6 +243,9 @@ var Schedule = {
         if (acceptDialog) {
             acceptDialog.querySelector('.booking-dialog-backdrop').addEventListener('click', function () {
                 acceptDialog.style.display = 'none';
+                self._acceptRequestIsConfirm = false;
+                var titleEl = document.getElementById('acceptRequestTitle');
+                if (titleEl) titleEl.textContent = 'Akceptacja propozycji';
             });
         }
 
@@ -959,8 +988,36 @@ var Schedule = {
             });
     },
 
-    confirmAppointment: function (id) {
-        this.updateStatus(id, 'confirmed');
+    confirmAppointment: function(id) {
+        var apt = this.findAppointment(id);
+        if (!apt) return;
+
+        // Reuse the accept request dialog for confirm flow
+        this._acceptRequestId = id;
+        this._acceptRequestIsConfirm = true;
+
+        var details = document.getElementById('acceptRequestDetails');
+        if (details) {
+            var dateObj = this.parseLocalDate(apt.slot_date);
+            var dayName = this.DAYS_PL[this.getDayIndex(dateObj)];
+            details.innerHTML = '<p><strong>' + dayName + ', ' + dateObj.getDate() + ' ' + this.MONTHS_PL[dateObj.getMonth()] + ' ' + dateObj.getFullYear() + '</strong></p>'
+                + '<p>' + this.formatTime(apt.start_time) + ' \u2013 ' + this.formatTime(apt.end_time) + ' (' + apt.duration_minutes + ' min)</p>'
+                + (apt.client ? '<p>Klient: ' + this.escapeHtml(apt.client.full_name) + '</p>' : '')
+                + (apt.notes ? '<p>Uwagi: ' + this.escapeHtml(apt.notes) + '</p>' : '');
+        }
+
+        // Set dialog title for confirm flow
+        var title = document.getElementById('acceptRequestTitle');
+        if (title) title.textContent = 'Potwierdzenie wizyty';
+
+        // Pre-select current session mode
+        var modeRadios = document.querySelectorAll('input[name="acceptSessionMode"]');
+        for (var i = 0; i < modeRadios.length; i++) {
+            modeRadios[i].checked = modeRadios[i].value === (apt.session_mode || 'in_person');
+        }
+
+        var dialog = document.getElementById('acceptRequestDialog');
+        if (dialog) dialog.style.display = '';
     },
 
     cancelAppointment: function (id) {
@@ -1599,6 +1656,25 @@ var Schedule = {
                 self.invalidateMonthCache();
             }).catch(function (err) {
                 logError('Błąd akceptacji:', err);
+            });
+    },
+
+    updateAppointment: function(id, data) {
+        var self = this;
+        supabase
+            .from('appointments')
+            .update(data)
+            .eq('id', id)
+            .then(function(result) {
+                if (result.error) {
+                    alert('Nie udało się zaktualizować wizyty.');
+                    logError('Błąd aktualizacji wizyty:', result.error);
+                    return;
+                }
+                self.loadWeekAppointments();
+                self.invalidateMonthCache();
+            }).catch(function(err) {
+                logError('Błąd aktualizacji:', err);
             });
     },
 
