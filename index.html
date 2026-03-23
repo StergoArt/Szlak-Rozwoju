@@ -7,6 +7,15 @@
     <title>Szlak Rozwoju - Gabinet Socjoterapii i Rozwoju Osobistego | Żywiec</title>
     <meta name="description"
         content="Gabinet socjoterapii w Żywcu. Socjoterapia indywidualna i grupowa, trening umiejętności społecznych, zajęcia ruchowe dla dzieci, młodzieży i dorosłych. Dorota Kluz - wieloletnie doświadczenie.">
+    <link rel="canonical" href="https://szlak-rozwoju.pl/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pl_PL">
+    <meta property="og:title" content="Szlak Rozwoju — Gabinet Socjoterapii i Rozwoju Osobistego | Żywiec">
+    <meta property="og:description" content="Gabinet socjoterapii w Żywcu. Socjoterapia indywidualna i grupowa, trening umiejętności społecznych, zajęcia ruchowe dla dzieci, młodzieży i dorosłych. Dorota Kluz - wieloletnie doświadczenie.">
+    <meta property="og:url" content="https://szlak-rozwoju.pl/">
+    <meta property="og:image" content="https://szlak-rozwoju.pl/logo.png">
+    <meta property="og:site_name" content="Szlak Rozwoju">
+    <link rel="icon" type="image/png" href="logo.png">
     <style>
         /* Self-hosted Google Fonts (RODO: eliminuje wysyłanie IP do Google) */
         @font-face { font-family: 'Poppins'; font-style: normal; font-weight: 300; font-display: swap;
@@ -1496,6 +1505,32 @@
             cursor: not-allowed;
             transform: none;
         }
+        /* Skip-to-content (accessibility) */
+        .skip-to-content {
+            position: absolute;
+            left: -9999px;
+            top: auto;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            z-index: 10000;
+        }
+        .skip-to-content:focus {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: auto;
+            height: auto;
+            padding: 12px 24px;
+            background: #FFCC00;
+            color: #1a1a2e;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10000;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js"
             integrity="sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS"
@@ -1503,6 +1538,8 @@
 </head>
 
 <body>
+    <a href="#main-content" class="skip-to-content">Przejdź do treści</a>
+
     <!-- Banner RODO -->
     <div id="privacyBanner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#1A202C; color:#fff; padding:16px 24px; z-index:10000; font-family:'Source Sans Pro',sans-serif; font-size:14px; line-height:1.5; box-shadow:0 -4px 20px rgba(0,0,0,0.15);">
         <div style="max-width:1000px; margin:0 auto; display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
@@ -1533,7 +1570,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero warm-gradient">
+    <section id="main-content" class="hero warm-gradient">
         <div class="path-decoration">
             <div class="path-curve" style="background: #FFCC00; top: 10%; left: 5%;"></div>
             <div class="path-curve" style="background: #4ECDC4; bottom: 15%; right: 10%;"></div>
@@ -2766,7 +2803,7 @@
                             showReplies(chatFlows.welcome.replies);
                         });
                     }, function () {
-                        addBotMessage('Niestety nie udało się wysłać wiadomości. 😔\n\nSkontaktuj się z nami bezpośrednio:\n📞 **+48 XXX XXX XXX**\n📧 **kontakt@szlakrozwoju.pl**\n\nLub skorzystaj z formularza kontaktowego na stronie.', function () {
+                        addBotMessage('Niestety nie udało się wysłać wiadomości. 😔\n\nSkontaktuj się z nami bezpośrednio:\n📧 **kontakt@szlak-rozwoju.pl**\n\nLub skorzystaj z formularza kontaktowego na stronie.', function () {
                             resetChatMode();
                             showReplies([
                                 { text: '📋 Formularz kontaktowy', target: 'scrollToContact' },
