@@ -12,6 +12,19 @@ var Schedule = {
     _clients: [],
     _clientsLoaded: false,
     _therapistId: null,
+    _viewMode: 'week',
+    monthOffset: 0,
+    currentMonthStart: null,
+    monthAppointments: [],
+    _monthAppointmentMap: {},
+    _monthLoadId: 0,
+    _monthCacheKey: null,
+    _monthCacheTime: 0,
+    _suppressMobileDayReset: false,
+    _pendingInterval: null,
+    _hashChangeCleanup: null,
+    _acceptRequestId: null,
+    _acceptRequestIsConfirm: false,
 
     // Stałe
     STATUS_LABELS: {
@@ -43,6 +56,9 @@ var Schedule = {
     DAYS_SHORT: ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'],
     MONTHS_PL: ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca',
         'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'],
+    MONTHS_NOM: ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec',
+        'Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'],
+    MONTH_CACHE_TTL: 120000,
 
     // ===== Inicjalizacja =====
     init: function () {
@@ -77,6 +93,36 @@ var Schedule = {
         // Kopiuj tydzień
         var copyBtn = document.getElementById('copyWeekBtn');
         if (copyBtn) copyBtn.addEventListener('click', function () { self.copyWeek(); });
+
+        // View toggle (tydzień/miesiąc)
+        var viewToggle = document.getElementById('scheduleViewToggle');
+        if (viewToggle) {
+            viewToggle.addEventListener('click', function(e) {
+                var btn = e.target.closest('.view-toggle-btn');
+                if (btn && btn.getAttribute('data-view')) {
+                    self.switchView(btn.getAttribute('data-view'));
+                }
+            });
+        }
+
+        // Month navigation
+        var monthPrevBtn = document.getElementById('scheduleMonthPrev');
+        var monthNextBtn = document.getElementById('scheduleMonthNext');
+        var monthTodayBtn = document.getElementById('scheduleMonthToday');
+        if (monthPrevBtn) monthPrevBtn.addEventListener('click', function() { self.goToMonth(self.monthOffset - 1); });
+        if (monthNextBtn) monthNextBtn.addEventListener('click', function() { self.goToMonth(self.monthOffset + 1); });
+        if (monthTodayBtn) monthTodayBtn.addEventListener('click', function() { self.goMonthToday(); });
+
+        // Month grid click delegation
+        var monthGrid = document.getElementById('scheduleMonthGrid');
+        if (monthGrid) {
+            monthGrid.addEventListener('click', function(e) {
+                var cell = e.target.closest('.month-day-cell');
+                if (cell && cell.getAttribute('data-date')) {
+                    self.onMonthDayClick(cell.getAttribute('data-date'));
+                }
+            });
+        }
 
         // Slot form: repeat checkbox toggle
         var repeatCb = document.getElementById('slotRepeat');
@@ -145,6 +191,65 @@ var Schedule = {
             });
         }
 
+        // Accept request dialog
+        var acceptConfirmBtn = document.getElementById('acceptRequestConfirmBtn');
+        var acceptCancelBtn = document.getElementById('acceptRequestCancelBtn');
+        if (acceptConfirmBtn) {
+            acceptConfirmBtn.addEventListener('click', function () {
+                var sessionMode = 'in_person';
+                var radios = document.querySelectorAll('input[name="acceptSessionMode"]');
+                for (var i = 0; i < radios.length; i++) {
+                    if (radios[i].checked) { sessionMode = radios[i].value; break; }
+                }
+                var dialog = document.getElementById('acceptRequestDialog');
+                if (dialog) dialog.style.display = 'none';
+
+                // Reset dialog title
+                var titleEl = document.getElementById('acceptRequestTitle');
+                if (titleEl) titleEl.textContent = 'Akceptacja propozycji';
+
+                if (self._acceptRequestId) {
+                    if (self._acceptRequestIsConfirm) {
+                        // Confirm flow: build update data with session mode
+                        var updateData = { status: 'confirmed' };
+                        var apt = self.findAppointment(self._acceptRequestId);
+                        if (apt && apt.session_mode !== sessionMode) {
+                            updateData.session_mode = sessionMode;
+                            if (sessionMode === 'online') {
+                                updateData.meeting_url = self.generateMeetingUrl(self._acceptRequestId);
+                            } else {
+                                updateData.meeting_url = null;
+                            }
+                        }
+                        self.updateAppointment(self._acceptRequestId, updateData);
+                    } else {
+                        // Accept request flow
+                        self.doAcceptRequest(self._acceptRequestId, sessionMode);
+                    }
+                }
+                self._acceptRequestIsConfirm = false;
+            });
+        }
+        if (acceptCancelBtn) {
+            acceptCancelBtn.addEventListener('click', function () {
+                var dialog = document.getElementById('acceptRequestDialog');
+                if (dialog) dialog.style.display = 'none';
+                self._acceptRequestIsConfirm = false;
+                var titleEl = document.getElementById('acceptRequestTitle');
+                if (titleEl) titleEl.textContent = 'Akceptacja propozycji';
+            });
+        }
+        // Close on backdrop click
+        var acceptDialog = document.getElementById('acceptRequestDialog');
+        if (acceptDialog) {
+            acceptDialog.querySelector('.booking-dialog-backdrop').addEventListener('click', function () {
+                acceptDialog.style.display = 'none';
+                self._acceptRequestIsConfirm = false;
+                var titleEl = document.getElementById('acceptRequestTitle');
+                if (titleEl) titleEl.textContent = 'Akceptacja propozycji';
+            });
+        }
+
         // Mobile detection
         this._mobileQuery = window.matchMedia('(max-width: 768px)');
         this._mobileQuery.addEventListener('change', function () { self.onMobileChange(); });
@@ -190,13 +295,40 @@ var Schedule = {
         var clientRequest = document.getElementById('clientRequestSection');
 
         if (Auth.isTherapist()) {
-            if (title) title.textContent = 'Grafik wizyt';
+            if (title) {
+                var badge = document.getElementById('schedulePendingBadge');
+                title.textContent = 'Grafik wizyt ';
+                if (badge) title.appendChild(badge);
+            }
             if (actions) actions.style.display = 'flex';
             if (myAppts) myAppts.style.display = 'none';
             if (clientRequest) clientRequest.style.display = 'none';
             if (!this._clientsLoaded) {
                 this.loadClients();
             }
+            // Badge & polling
+            this.updatePendingCount();
+            if (this._pendingInterval) clearInterval(this._pendingInterval);
+            if (this._hashChangeCleanup) {
+                window.removeEventListener('hashchange', this._hashChangeCleanup);
+                this._hashChangeCleanup = null;
+            }
+            var self = this;
+            this._pendingInterval = setInterval(function() {
+                self.updatePendingCount();
+            }, 60000);
+            // Cleanup polling when leaving schedule view
+            this._hashChangeCleanup = function() {
+                if (window.location.hash.indexOf('#/schedule') !== 0) {
+                    if (self._pendingInterval) {
+                        clearInterval(self._pendingInterval);
+                        self._pendingInterval = null;
+                    }
+                    window.removeEventListener('hashchange', self._hashChangeCleanup);
+                    self._hashChangeCleanup = null;
+                }
+            };
+            window.addEventListener('hashchange', this._hashChangeCleanup);
         } else {
             if (title) title.textContent = 'Rezerwacja wizyty';
             if (actions) actions.style.display = 'none';
@@ -206,7 +338,11 @@ var Schedule = {
             this.loadTherapistId();
         }
 
-        this.goToWeek(this.weekOffset);
+        if (this._viewMode === 'month') {
+            this.goToMonth(this.monthOffset);
+        } else {
+            this.goToWeek(this.weekOffset);
+        }
     },
 
     // ===== Nawigacja tygodni =====
@@ -322,6 +458,26 @@ var Schedule = {
             });
     },
 
+    updatePendingCount: function() {
+        if (!Auth.isTherapist()) return;
+        var todayStr = this.formatDateForDB(new Date());
+        supabase
+            .from('appointments')
+            .select('id', { count: 'exact', head: true })
+            .in('status', ['booked', 'requested'])
+            .gte('slot_date', todayStr)
+            .then(function(result) {
+                var count = (result && result.count) || 0;
+                var badge = document.getElementById('schedulePendingBadge');
+                if (badge) {
+                    badge.textContent = count > 0 ? count : '';
+                    badge.style.display = count > 0 ? 'inline-flex' : 'none';
+                }
+            }).catch(function(err) {
+                logError('Błąd ładowania oczekujących:', err);
+            });
+    },
+
     // ===== Renderowanie siatki =====
     renderWeekGrid: function () {
         var grid = document.getElementById('scheduleGrid');
@@ -418,11 +574,12 @@ var Schedule = {
 
         // Mobile: ustaw aktywny dzień
         if (this.isMobile()) {
-            if (this.weekOffset === 0) {
+            if (!this._suppressMobileDayReset && this.weekOffset === 0) {
                 var todayObj = new Date();
                 var dow = todayObj.getDay();
                 this._mobileDay = dow === 0 ? 6 : dow - 1;
             }
+            this._suppressMobileDayReset = false;
             this.updateMobileDay();
         }
     },
@@ -842,6 +999,7 @@ var Schedule = {
                 }
                 self.hideSlotForm();
                 self.loadWeekAppointments();
+                self.invalidateMonthCache();
             }).catch(function (err) {
                 if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Zapisz'; }
                 logError('Błąd zapisu slotu:', err);
@@ -872,13 +1030,42 @@ var Schedule = {
                     return;
                 }
                 self.loadWeekAppointments();
+                self.invalidateMonthCache();
             }).catch(function (err) {
                 logError('Błąd usuwania:', err);
             });
     },
 
-    confirmAppointment: function (id) {
-        this.updateStatus(id, 'confirmed');
+    confirmAppointment: function(id) {
+        var apt = this.findAppointment(id);
+        if (!apt) return;
+
+        // Reuse the accept request dialog for confirm flow
+        this._acceptRequestId = id;
+        this._acceptRequestIsConfirm = true;
+
+        var details = document.getElementById('acceptRequestDetails');
+        if (details) {
+            var dateObj = this.parseLocalDate(apt.slot_date);
+            var dayName = this.DAYS_PL[this.getDayIndex(dateObj)];
+            details.innerHTML = '<p><strong>' + dayName + ', ' + dateObj.getDate() + ' ' + this.MONTHS_PL[dateObj.getMonth()] + ' ' + dateObj.getFullYear() + '</strong></p>'
+                + '<p>' + this.formatTime(apt.start_time) + ' \u2013 ' + this.formatTime(apt.end_time) + ' (' + apt.duration_minutes + ' min)</p>'
+                + (apt.client ? '<p>Klient: ' + this.escapeHtml(apt.client.full_name) + '</p>' : '')
+                + (apt.notes ? '<p>Uwagi: ' + this.escapeHtml(apt.notes) + '</p>' : '');
+        }
+
+        // Set dialog title for confirm flow
+        var title = document.getElementById('acceptRequestTitle');
+        if (title) title.textContent = 'Potwierdzenie wizyty';
+
+        // Pre-select current session mode
+        var modeRadios = document.querySelectorAll('input[name="acceptSessionMode"]');
+        for (var i = 0; i < modeRadios.length; i++) {
+            modeRadios[i].checked = modeRadios[i].value === (apt.session_mode || 'in_person');
+        }
+
+        var dialog = document.getElementById('acceptRequestDialog');
+        if (dialog) dialog.style.display = '';
     },
 
     cancelAppointment: function (id) {
@@ -903,6 +1090,7 @@ var Schedule = {
                     return;
                 }
                 self.loadWeekAppointments();
+                self.invalidateMonthCache();
             }).catch(function (err) {
                 logError('Błąd aktualizacji statusu:', err);
             });
@@ -963,6 +1151,7 @@ var Schedule = {
                 }
                 alert('Skopiowano ' + toCopy.length + ' termin\u00F3w na nast\u0119pny tydzie\u0144.');
                 self.goToWeek(self.weekOffset + 1);
+                self.invalidateMonthCache();
             }).catch(function (err) {
                 logError('Błąd kopiowania:', err);
                 alert('Wyst\u0105pi\u0142 b\u0142\u0105d podczas kopiowania.');
@@ -1038,6 +1227,7 @@ var Schedule = {
                     self.hideBookingDialog();
                     self.showErrorModal('Wyst\u0105pi\u0142 b\u0142\u0105d podczas rezerwacji. Spr\u00F3buj ponownie.');
                     self.loadWeekAppointments();
+                    self.invalidateMonthCache();
                     return;
                 }
 
@@ -1046,6 +1236,7 @@ var Schedule = {
                     self.hideBookingDialog();
                     self.showErrorModal('Niestety, kto\u015B w\u0142a\u015Bnie zarezerwowa\u0142 ten termin. Widok zosta\u0142 od\u015Bwie\u017Cony.');
                     self.loadWeekAppointments();
+                    self.invalidateMonthCache();
                     if (!Auth.isTherapist()) self.loadMyAppointments();
                     return;
                 }
@@ -1053,12 +1244,14 @@ var Schedule = {
                 self.hideBookingDialog();
                 self.loadWeekAppointments();
                 self.loadMyAppointments();
+                self.invalidateMonthCache();
             }).catch(function (err) {
                 if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = 'Zarezerwuj'; }
                 logError('Błąd rezerwacji:', err);
                 self.hideBookingDialog();
                 self.showErrorModal('Wyst\u0105pi\u0142 b\u0142\u0105d po\u0142\u0105czenia. Spr\u00F3buj ponownie.');
                 self.loadWeekAppointments();
+                self.invalidateMonthCache();
             });
     },
 
@@ -1115,6 +1308,7 @@ var Schedule = {
                 }
                 self.loadMyAppointments();
                 self.loadWeekAppointments();
+                self.invalidateMonthCache();
             }).catch(function (err) {
                 logError('Błąd anulowania:', err);
             });
@@ -1279,6 +1473,14 @@ var Schedule = {
         return div.innerHTML;
     },
 
+    polishPlural: function (n, one, few, many) {
+        if (n === 1) return one;
+        var mod10 = n % 10;
+        var mod100 = n % 100;
+        if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+        return many;
+    },
+
     generateUUID: function () {
         if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -1377,6 +1579,11 @@ var Schedule = {
                 self.showRequestAlert('Nie uda\u0142o si\u0119 pobra\u0107 danych terapeuty. Spr\u00F3buj ponownie.');
                 return;
             }
+            var requestSessionMode = 'in_person';
+            var modeRadios = document.querySelectorAll('input[name="requestSessionMode"]');
+            for (var rm = 0; rm < modeRadios.length; rm++) {
+                if (modeRadios[rm].checked) { requestSessionMode = modeRadios[rm].value; break; }
+            }
             var record = {
                 id: self.generateUUID(),
                 slot_date: dateVal,
@@ -1388,7 +1595,7 @@ var Schedule = {
                 client_id: Auth.currentUser.id,
                 service_type: serviceVal || null,
                 notes: notesVal,
-                session_mode: 'in_person',
+                session_mode: requestSessionMode,
                 meeting_url: null
             };
 
@@ -1413,6 +1620,7 @@ var Schedule = {
                     self.hideRequestForm();
                     self.loadWeekAppointments();
                     self.loadMyAppointments();
+                    self.invalidateMonthCache();
                 }).catch(function (err) {
                     if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Wy\u015Blij propozycj\u0119'; }
                     logError('Błąd wysyłania propozycji:', err);
@@ -1439,17 +1647,61 @@ var Schedule = {
 
     // ===== Akceptacja / odrzucenie propozycji (terapeuta) =====
     acceptRequest: function (id) {
+        this.showAcceptRequestDialog(id);
+    },
+
+    showAcceptRequestDialog: function (id) {
+        var apt = this.findAppointment(id);
+        if (!apt) return;
+
+        this._acceptRequestId = id;
+
+        var details = document.getElementById('acceptRequestDetails');
+        if (details) {
+            var dateObj = this.parseLocalDate(apt.slot_date);
+            var dayName = this.DAYS_PL[this.getDayIndex(dateObj)];
+            var html = '<p><strong>' + dayName + ', ' + dateObj.getDate() + ' ' + this.MONTHS_PL[dateObj.getMonth()] + ' ' + dateObj.getFullYear() + '</strong></p>'
+                + '<p>' + this.formatTime(apt.start_time) + ' \u2013 ' + this.formatTime(apt.end_time) + ' (' + apt.duration_minutes + ' min)</p>';
+            if (apt.client) html += '<p>Klient: ' + this.escapeHtml(apt.client.full_name) + '</p>';
+            if (apt.notes) html += '<p>Uwagi: ' + this.escapeHtml(apt.notes) + '</p>';
+            details.innerHTML = html;
+        }
+
+        // Pre-select session mode based on client's preference
+        var modeRadios = document.querySelectorAll('input[name="acceptSessionMode"]');
+        for (var i = 0; i < modeRadios.length; i++) {
+            modeRadios[i].checked = modeRadios[i].value === (apt.session_mode || 'in_person');
+        }
+
+        var dialog = document.getElementById('acceptRequestDialog');
+        if (dialog) dialog.style.display = '';
+    },
+
+    doAcceptRequest: function (id, sessionMode) {
         var self = this;
-        if (!confirm('Zaakceptowa\u0107 t\u0119 propozycj\u0119 terminu?')) return;
+        var now = new Date();
+        var timestamp = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + 'T' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+
+        var updateData = {
+            status: 'confirmed',
+            session_mode: sessionMode,
+            booked_at: timestamp
+        };
+
+        if (sessionMode === 'online') {
+            updateData.meeting_url = this.generateMeetingUrl(id);
+        } else {
+            updateData.meeting_url = null;
+        }
+
         supabase
             .from('appointments')
-            .update({ status: 'confirmed', booked_at: (function() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + 'T' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0'); })() })
+            .update(updateData)
             .eq('id', id)
             .then(function (result) {
                 if (result.error) {
                     if (result.error.message && result.error.message.indexOf('overlap') !== -1) {
-                        alert('Nie mo\u017Cna zaakceptowa\u0107 \u2014 istniej\u0105cy termin koliduje z propozycj\u0105. '
-                            + 'Usu\u0144 koliduj\u0105cy wolny termin i spr\u00F3buj ponownie.');
+                        alert('Nie mo\u017Cna zaakceptowa\u0107 \u2014 istniej\u0105cy termin koliduje z propozycj\u0105. Usu\u0144 koliduj\u0105cy wolny termin i spr\u00F3buj ponownie.');
                     } else {
                         alert('Nie uda\u0142o si\u0119 zaakceptowa\u0107 propozycji.');
                     }
@@ -1457,8 +1709,28 @@ var Schedule = {
                     return;
                 }
                 self.loadWeekAppointments();
+                self.invalidateMonthCache();
             }).catch(function (err) {
                 logError('Błąd akceptacji:', err);
+            });
+    },
+
+    updateAppointment: function(id, data) {
+        var self = this;
+        supabase
+            .from('appointments')
+            .update(data)
+            .eq('id', id)
+            .then(function(result) {
+                if (result.error) {
+                    alert('Nie udało się zaktualizować wizyty.');
+                    logError('Błąd aktualizacji wizyty:', result.error);
+                    return;
+                }
+                self.loadWeekAppointments();
+                self.invalidateMonthCache();
+            }).catch(function(err) {
+                logError('Błąd aktualizacji:', err);
             });
     },
 
@@ -1476,6 +1748,7 @@ var Schedule = {
                     return;
                 }
                 self.loadWeekAppointments();
+                self.invalidateMonthCache();
             }).catch(function (err) {
                 logError('Błąd odrzucenia:', err);
             });
@@ -1498,6 +1771,7 @@ var Schedule = {
                 }
                 self.loadMyAppointments();
                 self.loadWeekAppointments();
+                self.invalidateMonthCache();
             }).catch(function (err) {
                 logError('Błąd anulowania propozycji:', err);
             });
@@ -1520,5 +1794,274 @@ var Schedule = {
             }).catch(function (err) {
                 logError('Błąd ładowania ID terapeuty:', err);
             });
+    },
+
+    // ===== Widok miesiąca =====
+    switchView: function(mode) {
+        if (mode === this._viewMode) return;
+        this._viewMode = mode;
+
+        // Toggle active class on buttons
+        var btns = document.querySelectorAll('#scheduleViewToggle .view-toggle-btn');
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].classList.toggle('active', btns[i].getAttribute('data-view') === mode);
+        }
+
+        // Toggle visibility of week vs month elements
+        var weekNav = document.querySelector('.schedule-nav:not(.schedule-month-nav)');
+        var monthNav = document.getElementById('scheduleMonthNav');
+        var weekGrid = document.getElementById('scheduleGrid');
+        var monthGrid = document.getElementById('scheduleMonthGrid');
+        var mobileNav = document.querySelector('.schedule-day-view-nav');
+
+        if (mode === 'month') {
+            if (weekNav) weekNav.style.display = 'none';
+            if (monthNav) monthNav.style.display = '';
+            if (weekGrid) weekGrid.style.display = 'none';
+            if (monthGrid) monthGrid.style.display = '';
+            if (mobileNav) mobileNav.style.display = 'none';
+            this.goToMonth(this.monthOffset);
+        } else {
+            if (weekNav) weekNav.style.display = '';
+            if (monthNav) monthNav.style.display = 'none';
+            if (weekGrid) weekGrid.style.display = '';
+            if (monthGrid) monthGrid.style.display = 'none';
+            if (mobileNav && this.isMobile()) mobileNav.style.display = '';
+            this.goToWeek(this.weekOffset);
+        }
+    },
+
+    goToMonth: function(offset) {
+        this.monthOffset = offset;
+        var now = new Date();
+        this.currentMonthStart = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+        this.renderMonthHeader();
+        this.loadMonthAppointments();
+    },
+
+    goMonthToday: function() {
+        this.goToMonth(0);
+    },
+
+    renderMonthHeader: function() {
+        var label = document.getElementById('scheduleMonthLabel');
+        if (!label) return;
+        var m = this.currentMonthStart;
+        label.textContent = this.MONTHS_NOM[m.getMonth()] + ' ' + m.getFullYear();
+    },
+
+    loadMonthAppointments: function() {
+        var self = this;
+        var m = this.currentMonthStart;
+        var cacheKey = m.getFullYear() + '-' + String(m.getMonth() + 1).padStart(2, '0');
+
+        // Cache check
+        if (this._monthCacheKey === cacheKey && (Date.now() - this._monthCacheTime) < this.MONTH_CACHE_TTL) {
+            this.renderMonthGrid();
+            return;
+        }
+
+        var loadId = ++this._monthLoadId;
+
+        // Show spinner
+        var grid = document.getElementById('scheduleMonthGrid');
+        if (grid) {
+            this.clearElement(grid);
+            var spinner = document.createElement('div');
+            spinner.className = 'spinner-container';
+            spinner.style.gridColumn = '1 / -1';
+            var sp = document.createElement('span');
+            sp.className = 'spinner';
+            spinner.appendChild(sp);
+            grid.appendChild(spinner);
+        }
+
+        // Compute grid range: Monday before 1st to Sunday after last day
+        var firstDay = new Date(m.getFullYear(), m.getMonth(), 1);
+        var lastDay = new Date(m.getFullYear(), m.getMonth() + 1, 0);
+        var firstDow = firstDay.getDay();
+        var gridStart = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() - (firstDow === 0 ? 6 : firstDow - 1));
+        var lastDow = lastDay.getDay();
+        var gridEnd = new Date(lastDay.getFullYear(), lastDay.getMonth(), lastDay.getDate() + (lastDow === 0 ? 0 : 7 - lastDow));
+
+        var gridStartStr = this.formatDateForDB(gridStart);
+        var gridEndStr = this.formatDateForDB(gridEnd);
+
+        supabase
+            .from('appointments')
+            .select('*, client:profiles!appointments_client_id_fkey(full_name)')
+            .gte('slot_date', gridStartStr)
+            .lte('slot_date', gridEndStr)
+            .order('slot_date', { ascending: true })
+            .order('start_time', { ascending: true })
+            .then(function(result) {
+                if (self._monthLoadId !== loadId) return;
+                var data = [];
+                if (result.error) {
+                    logError('Błąd ładowania miesiąca:', result.error);
+                } else {
+                    data = result.data || [];
+                }
+                self.monthAppointments = data;
+
+                // Group into map
+                var map = {};
+                for (var i = 0; i < data.length; i++) {
+                    var d = data[i].slot_date;
+                    if (!map[d]) map[d] = [];
+                    map[d].push(data[i]);
+                }
+                self._monthAppointmentMap = map;
+                self._monthCacheKey = cacheKey;
+                self._monthCacheTime = Date.now();
+
+                self.renderMonthGrid();
+            }).catch(function(err) {
+                if (self._monthLoadId !== loadId) return;
+                logError('Błąd ładowania miesiąca:', err);
+            });
+    },
+
+    invalidateMonthCache: function() {
+        this._monthCacheKey = null;
+        this._monthCacheTime = 0;
+        if (this._viewMode === 'month') {
+            this.loadMonthAppointments();
+        }
+    },
+
+    renderMonthGrid: function() {
+        var grid = document.getElementById('scheduleMonthGrid');
+        if (!grid) return;
+        this.clearElement(grid);
+
+        var isTherapist = Auth.isTherapist();
+        var m = this.currentMonthStart;
+        var todayStr = this.formatDateForDB(new Date());
+        var currentMonth = m.getMonth();
+
+        // Header cells (Mon-Sun)
+        for (var h = 0; h < 7; h++) {
+            var hCell = document.createElement('div');
+            hCell.className = 'month-day-header-cell';
+            hCell.textContent = this.DAYS_SHORT[h];
+            grid.appendChild(hCell);
+        }
+
+        // Compute grid start (Monday before 1st)
+        var firstDay = new Date(m.getFullYear(), m.getMonth(), 1);
+        var firstDow = firstDay.getDay();
+        var gridStart = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() - (firstDow === 0 ? 6 : firstDow - 1));
+
+        // Compute grid end (Sunday after last day)
+        var lastDay = new Date(m.getFullYear(), m.getMonth() + 1, 0);
+        var lastDow = lastDay.getDay();
+        var gridEnd = new Date(lastDay.getFullYear(), lastDay.getMonth(), lastDay.getDate() + (lastDow === 0 ? 0 : 7 - lastDow));
+
+        // Iterate days
+        var cursor = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate());
+        while (cursor <= gridEnd) {
+            var dateStr = this.formatDateForDB(cursor);
+            var cell = document.createElement('div');
+            cell.className = 'month-day-cell';
+            cell.setAttribute('data-date', dateStr);
+
+            if (cursor.getMonth() !== currentMonth) cell.classList.add('other-month');
+            if (dateStr === todayStr) cell.classList.add('today');
+
+            var num = document.createElement('div');
+            num.className = 'month-day-number';
+            num.textContent = cursor.getDate();
+            cell.appendChild(num);
+
+            var summary = this.renderMonthDaySummary(dateStr, isTherapist);
+            if (summary) cell.appendChild(summary);
+
+            grid.appendChild(cell);
+            cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + 1);
+        }
+    },
+
+    renderMonthDaySummary: function(dayStr, isTherapist) {
+        var apts = this._monthAppointmentMap[dayStr];
+        if (!apts || apts.length === 0) return null;
+
+        var container = document.createElement('div');
+        container.className = 'month-day-summary';
+
+        if (isTherapist) {
+            // Count by status
+            var counts = {};
+            for (var i = 0; i < apts.length; i++) {
+                var s = apts[i].status;
+                counts[s] = (counts[s] || 0) + 1;
+            }
+
+            var countDiv = document.createElement('div');
+            countDiv.className = 'month-day-count';
+            var total = apts.length;
+            countDiv.textContent = total + ' ' + this.polishPlural(total, 'wizyta', 'wizyty', 'wizyt');
+            container.appendChild(countDiv);
+
+            // Status dots
+            var statusOrder = ['available', 'booked', 'confirmed', 'requested', 'completed'];
+            for (var j = 0; j < statusOrder.length; j++) {
+                var st = statusOrder[j];
+                if (counts[st]) {
+                    for (var k = 0; k < Math.min(counts[st], 5); k++) {
+                        var dot = document.createElement('span');
+                        dot.className = 'month-status-dot dot-' + st;
+                        container.appendChild(dot);
+                    }
+                }
+            }
+        } else {
+            // Client: count available + own
+            var available = 0;
+            var own = 0;
+            for (var ci = 0; ci < apts.length; ci++) {
+                if (apts[ci].status === 'available') available++;
+                else if (apts[ci].client_id === Auth.currentUser.id) own++;
+            }
+            if (available > 0 || own > 0) {
+                var text = '';
+                if (available > 0) text += available + ' ' + this.polishPlural(available, 'wolny', 'wolne', 'wolnych');
+                if (own > 0) {
+                    if (text) text += ', ';
+                    text += own + ' ' + this.polishPlural(own, 'Twoja', 'Twoje', 'Twoich');
+                }
+                container.textContent = text;
+            } else {
+                return null;
+            }
+        }
+
+        return container;
+    },
+
+    onMonthDayClick: function(dateStr) {
+        var clickedDate = this.parseLocalDate(dateStr);
+
+        // Compute weekOffset for this date
+        var clickedMonday = new Date(clickedDate.getFullYear(), clickedDate.getMonth(), clickedDate.getDate() - this.getDayIndex(clickedDate));
+        var currentMonday = this.getWeekStart(0);
+        var diffDays = Math.round((clickedMonday - currentMonday) / 86400000);
+        var newWeekOffset = Math.round(diffDays / 7);
+
+        // Set mobile day before switching view
+        if (this.isMobile()) {
+            this._suppressMobileDayReset = true;
+            this._mobileDay = this.getDayIndex(clickedDate);
+        }
+
+        // Set weekOffset BEFORE switchView so it loads the correct week in one call
+        this.weekOffset = newWeekOffset;
+        this.switchView('week');
+
+        // On mobile, force the correct day after render
+        if (this.isMobile()) {
+            this._mobileDay = this.getDayIndex(clickedDate);
+            this.updateMobileDay();
+        }
     }
 };

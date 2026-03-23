@@ -1569,6 +1569,186 @@ body {
     text-align: center;
 }
 
+/* ===== Widok miesięczny ===== */
+.schedule-view-toggle {
+    display: flex;
+    gap: 0;
+    background: #F0F0F0;
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 16px;
+    max-width: 240px;
+}
+.view-toggle-btn {
+    flex: 1;
+    text-align: center;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    background: transparent;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease;
+}
+.view-toggle-btn.active {
+    background: #FFFFFF;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.view-toggle-btn:hover:not(.active) {
+    color: #333;
+}
+
+.schedule-month-nav {
+    margin-bottom: 16px;
+}
+
+.schedule-month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: #E2E8F0;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.month-day-header-cell {
+    background: #FFF9E6;
+    text-align: center;
+    padding: 8px 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #4A5568;
+    font-family: 'Poppins', sans-serif;
+}
+
+.month-day-cell {
+    background: #FFFFFF;
+    min-height: 80px;
+    padding: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    position: relative;
+}
+.month-day-cell:hover {
+    background: #FFF9E6;
+}
+.month-day-cell.today {
+    background: #FFFDE0;
+}
+.month-day-cell.other-month {
+    opacity: 0.4;
+}
+.month-day-cell.other-month:hover {
+    opacity: 0.6;
+}
+
+.month-day-number {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2D3748;
+    margin-bottom: 4px;
+}
+.month-day-cell.today .month-day-number {
+    background: #FFCC00;
+    color: #fff;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.month-day-summary {
+    font-size: 11px;
+    color: #718096;
+    line-height: 1.4;
+}
+
+.month-status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 3px;
+    vertical-align: middle;
+}
+.month-status-dot.dot-available { background: #48BB78; }
+.month-status-dot.dot-booked { background: #FFCC00; }
+.month-status-dot.dot-confirmed { background: #4ECDC4; }
+.month-status-dot.dot-requested { background: #FF8C42; }
+.month-status-dot.dot-completed { background: #A0AEC0; }
+
+.month-day-count {
+    font-weight: 600;
+    font-size: 12px;
+    color: #4A5568;
+    margin-bottom: 2px;
+}
+
+/* Pending badge */
+.pending-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #E53E3E;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    padding: 0 5px;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ===== Widok miesięczny — responsywność ===== */
+@media (max-width: 768px) {
+    .schedule-month-grid {
+        gap: 1px;
+    }
+    .month-day-cell {
+        min-height: 48px;
+        padding: 4px;
+    }
+    .month-day-header-cell {
+        padding: 6px 2px;
+        font-size: 10px;
+    }
+    .month-day-number {
+        font-size: 12px;
+    }
+    .month-day-cell.today .month-day-number {
+        width: 22px;
+        height: 22px;
+        font-size: 10px;
+    }
+    .month-day-summary {
+        font-size: 9px;
+    }
+    .month-day-count {
+        font-size: 10px;
+    }
+    .schedule-view-toggle {
+        max-width: 200px;
+    }
+    .view-toggle-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
+
 /* ===== Responsywność ===== */
 @media (max-width: 768px) {
     .panel-nav .container {

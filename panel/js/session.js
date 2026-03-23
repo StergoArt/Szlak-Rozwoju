@@ -221,19 +221,42 @@ var Session = {
 
     endSession: function () {
         var apt = this._appointment;
-        this.cleanup();
+        this.cleanup();  // First cleanup synchronously (close Jitsi)
 
-        if (Auth.isTherapist() && apt && confirm('Sesja zako\u0144czona. Doda\u0107 notatk\u0119 z sesji?')) {
-            Notes.pendingAppointmentContext = {
-                appointmentId: apt.id,
-                clientId: apt.client_id,
-                clientName: apt.client ? apt.client.full_name : '',
-                date: apt.slot_date
-            };
-            window.location.hash = '#/notes';
-        } else {
+        if (!apt) {
             window.location.hash = '#/schedule';
+            return;
         }
+
+        // Async update status to completed
+        supabase
+            .from('appointments')
+            .update({ status: 'completed' })
+            .eq('id', apt.id)
+            .then(function(result) {
+                if (result.error) {
+                    logError('Błąd aktualizacji statusu po sesji:', result.error);
+                    alert('Uwaga: sesja się zakończyła, ale wystąpił błąd zapisu statusu do bazy. Zmień status ręcznie w grafiku wizyt.');
+                    window.location.hash = '#/schedule';
+                    return;
+                }
+                // Success: offer to create note
+                if (Auth.isTherapist() && confirm('Sesja zakończona. Dodać notatkę z sesji?')) {
+                    Notes.pendingAppointmentContext = {
+                        appointmentId: apt.id,
+                        clientId: apt.client_id,
+                        clientName: apt.client ? apt.client.full_name : '',
+                        date: apt.slot_date
+                    };
+                    window.location.hash = '#/notes';
+                } else {
+                    window.location.hash = '#/schedule';
+                }
+            }).catch(function(err) {
+                logError('Błąd aktualizacji statusu:', err);
+                alert('Uwaga: sesja się zakończyła, ale wystąpił błąd zapisu statusu do bazy. Zmień status ręcznie w grafiku wizyt.');
+                window.location.hash = '#/schedule';
+            });
     },
 
     cleanup: function () {

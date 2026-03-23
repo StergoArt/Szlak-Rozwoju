@@ -374,7 +374,7 @@
         <div id="view-schedule" class="view">
             <div class="schedule-header">
                 <a href="#/dashboard" class="back-link">&larr; Dashboard</a>
-                <h1 id="scheduleTitle">Grafik wizyt</h1>
+                <h1 id="scheduleTitle">Grafik wizyt <span id="schedulePendingBadge" class="pending-badge" style="display:none;"></span></h1>
             </div>
 
             <!-- Nawigacja tygodnia -->
@@ -384,6 +384,23 @@
                 <button id="scheduleNext" class="btn-icon-nav" title="Następny tydzień" aria-label="Następny tydzień">&rsaquo;</button>
                 <button id="scheduleToday" class="btn-secondary btn-sm schedule-today-btn">Dziś</button>
             </div>
+
+            <!-- Toggle tydzień/miesiąc -->
+            <div class="schedule-view-toggle" id="scheduleViewToggle">
+                <button class="view-toggle-btn active" data-view="week">Tydzień</button>
+                <button class="view-toggle-btn" data-view="month">Miesiąc</button>
+            </div>
+
+            <!-- Nawigacja miesiąca (hidden by default) -->
+            <div class="schedule-nav schedule-month-nav" id="scheduleMonthNav" style="display:none;">
+                <button id="scheduleMonthPrev" class="btn-icon-nav" title="Poprzedni miesiąc" aria-label="Poprzedni miesiąc">&lsaquo;</button>
+                <span id="scheduleMonthLabel" class="schedule-week-label"></span>
+                <button id="scheduleMonthNext" class="btn-icon-nav" title="Następny miesiąc" aria-label="Następny miesiąc">&rsaquo;</button>
+                <button id="scheduleMonthToday" class="btn-secondary btn-sm schedule-today-btn">Dziś</button>
+            </div>
+
+            <!-- Siatka miesięczna -->
+            <div id="scheduleMonthGrid" class="schedule-month-grid" style="display:none;"></div>
 
             <!-- Desktop: siatka tygodniowa -->
             <div id="scheduleGrid" class="schedule-grid"></div>
@@ -475,11 +492,46 @@
                     <label for="requestNotes">Uwagi (opcjonalnie)</label>
                     <textarea id="requestNotes" class="schedule-select" rows="2" placeholder="Np. preferuję popołudnie, potrzebuję dłuższej sesji..."></textarea>
                 </div>
+                <div class="form-group">
+                    <label>Tryb sesji</label>
+                    <div class="duration-options">
+                        <label class="duration-option">
+                            <input type="radio" name="requestSessionMode" value="in_person" checked> Stacjonarna
+                        </label>
+                        <label class="duration-option">
+                            <input type="radio" name="requestSessionMode" value="online"> Online
+                        </label>
+                    </div>
+                </div>
                 <div class="booking-dialog-buttons">
                     <button type="submit" id="requestFormSaveBtn" class="btn-primary btn-sm">Wyślij propozycję</button>
                     <button type="button" id="requestFormCancelBtn" class="btn-secondary btn-sm">Anuluj</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Accept request dialog (terapeuta) -->
+    <div id="acceptRequestDialog" class="booking-dialog" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="acceptRequestTitle">
+        <div class="booking-dialog-backdrop"></div>
+        <div class="booking-dialog-content">
+            <h3 id="acceptRequestTitle">Akceptacja propozycji</h3>
+            <div id="acceptRequestDetails" class="booking-dialog-details"></div>
+            <div class="form-group">
+                <label>Tryb sesji</label>
+                <div class="duration-options">
+                    <label class="duration-option">
+                        <input type="radio" name="acceptSessionMode" value="in_person" checked> Stacjonarna
+                    </label>
+                    <label class="duration-option">
+                        <input type="radio" name="acceptSessionMode" value="online"> Online
+                    </label>
+                </div>
+            </div>
+            <div class="booking-dialog-buttons">
+                <button type="button" id="acceptRequestConfirmBtn" class="btn-primary btn-sm">Akceptuj</button>
+                <button type="button" id="acceptRequestCancelBtn" class="btn-secondary btn-sm">Anuluj</button>
+            </div>
         </div>
     </div>
 
