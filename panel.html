@@ -492,11 +492,46 @@
                     <label for="requestNotes">Uwagi (opcjonalnie)</label>
                     <textarea id="requestNotes" class="schedule-select" rows="2" placeholder="Np. preferuję popołudnie, potrzebuję dłuższej sesji..."></textarea>
                 </div>
+                <div class="form-group">
+                    <label>Tryb sesji</label>
+                    <div class="duration-options">
+                        <label class="duration-option">
+                            <input type="radio" name="requestSessionMode" value="in_person" checked> Stacjonarna
+                        </label>
+                        <label class="duration-option">
+                            <input type="radio" name="requestSessionMode" value="online"> Online
+                        </label>
+                    </div>
+                </div>
                 <div class="booking-dialog-buttons">
                     <button type="submit" id="requestFormSaveBtn" class="btn-primary btn-sm">Wyślij propozycję</button>
                     <button type="button" id="requestFormCancelBtn" class="btn-secondary btn-sm">Anuluj</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Accept request dialog (terapeuta) -->
+    <div id="acceptRequestDialog" class="booking-dialog" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="acceptRequestTitle">
+        <div class="booking-dialog-backdrop"></div>
+        <div class="booking-dialog-content">
+            <h3 id="acceptRequestTitle">Akceptacja propozycji</h3>
+            <div id="acceptRequestDetails" class="booking-dialog-details"></div>
+            <div class="form-group">
+                <label>Tryb sesji</label>
+                <div class="duration-options">
+                    <label class="duration-option">
+                        <input type="radio" name="acceptSessionMode" value="in_person" checked> Stacjonarna
+                    </label>
+                    <label class="duration-option">
+                        <input type="radio" name="acceptSessionMode" value="online"> Online
+                    </label>
+                </div>
+            </div>
+            <div class="booking-dialog-buttons">
+                <button type="button" id="acceptRequestConfirmBtn" class="btn-primary btn-sm">Akceptuj</button>
+                <button type="button" id="acceptRequestCancelBtn" class="btn-secondary btn-sm">Anuluj</button>
+            </div>
         </div>
     </div>
 

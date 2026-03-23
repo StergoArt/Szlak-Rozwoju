@@ -22,6 +22,7 @@ var Schedule = {
     _monthCacheTime: 0,
     _suppressMobileDayReset: false,
     _pendingInterval: null,
+    _acceptRequestId: null,
 
     // Stałe
     STATUS_LABELS: {
@@ -185,6 +186,37 @@ var Schedule = {
         if (requestModal) {
             requestModal.querySelector('.booking-dialog-backdrop').addEventListener('click', function () {
                 self.hideRequestForm();
+            });
+        }
+
+        // Accept request dialog
+        var acceptConfirmBtn = document.getElementById('acceptRequestConfirmBtn');
+        var acceptCancelBtn = document.getElementById('acceptRequestCancelBtn');
+        if (acceptConfirmBtn) {
+            acceptConfirmBtn.addEventListener('click', function () {
+                var sessionMode = 'in_person';
+                var radios = document.querySelectorAll('input[name="acceptSessionMode"]');
+                for (var i = 0; i < radios.length; i++) {
+                    if (radios[i].checked) { sessionMode = radios[i].value; break; }
+                }
+                var dialog = document.getElementById('acceptRequestDialog');
+                if (dialog) dialog.style.display = 'none';
+                if (self._acceptRequestId) {
+                    self.doAcceptRequest(self._acceptRequestId, sessionMode);
+                }
+            });
+        }
+        if (acceptCancelBtn) {
+            acceptCancelBtn.addEventListener('click', function () {
+                var dialog = document.getElementById('acceptRequestDialog');
+                if (dialog) dialog.style.display = 'none';
+            });
+        }
+        // Close on backdrop click
+        var acceptDialog = document.getElementById('acceptRequestDialog');
+        if (acceptDialog) {
+            acceptDialog.querySelector('.booking-dialog-backdrop').addEventListener('click', function () {
+                acceptDialog.style.display = 'none';
             });
         }
 
@@ -1434,6 +1466,11 @@ var Schedule = {
                 self.showRequestAlert('Nie uda\u0142o si\u0119 pobra\u0107 danych terapeuty. Spr\u00F3buj ponownie.');
                 return;
             }
+            var requestSessionMode = 'in_person';
+            var modeRadios = document.querySelectorAll('input[name="requestSessionMode"]');
+            for (var rm = 0; rm < modeRadios.length; rm++) {
+                if (modeRadios[rm].checked) { requestSessionMode = modeRadios[rm].value; break; }
+            }
             var record = {
                 id: self.generateUUID(),
                 slot_date: dateVal,
@@ -1445,7 +1482,7 @@ var Schedule = {
                 client_id: Auth.currentUser.id,
                 service_type: serviceVal || null,
                 notes: notesVal,
-                session_mode: 'in_person',
+                session_mode: requestSessionMode,
                 meeting_url: null
             };
 
@@ -1497,17 +1534,61 @@ var Schedule = {
 
     // ===== Akceptacja / odrzucenie propozycji (terapeuta) =====
     acceptRequest: function (id) {
+        this.showAcceptRequestDialog(id);
+    },
+
+    showAcceptRequestDialog: function (id) {
+        var apt = this.findAppointment(id);
+        if (!apt) return;
+
+        this._acceptRequestId = id;
+
+        var details = document.getElementById('acceptRequestDetails');
+        if (details) {
+            var dateObj = this.parseLocalDate(apt.slot_date);
+            var dayName = this.DAYS_PL[this.getDayIndex(dateObj)];
+            var html = '<p><strong>' + dayName + ', ' + dateObj.getDate() + ' ' + this.MONTHS_PL[dateObj.getMonth()] + ' ' + dateObj.getFullYear() + '</strong></p>'
+                + '<p>' + this.formatTime(apt.start_time) + ' \u2013 ' + this.formatTime(apt.end_time) + ' (' + apt.duration_minutes + ' min)</p>';
+            if (apt.client) html += '<p>Klient: ' + this.escapeHtml(apt.client.full_name) + '</p>';
+            if (apt.notes) html += '<p>Uwagi: ' + this.escapeHtml(apt.notes) + '</p>';
+            details.innerHTML = html;
+        }
+
+        // Pre-select session mode based on client's preference
+        var modeRadios = document.querySelectorAll('input[name="acceptSessionMode"]');
+        for (var i = 0; i < modeRadios.length; i++) {
+            modeRadios[i].checked = modeRadios[i].value === (apt.session_mode || 'in_person');
+        }
+
+        var dialog = document.getElementById('acceptRequestDialog');
+        if (dialog) dialog.style.display = '';
+    },
+
+    doAcceptRequest: function (id, sessionMode) {
         var self = this;
-        if (!confirm('Zaakceptowa\u0107 t\u0119 propozycj\u0119 terminu?')) return;
+        var now = new Date();
+        var timestamp = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + 'T' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+
+        var updateData = {
+            status: 'confirmed',
+            session_mode: sessionMode,
+            booked_at: timestamp
+        };
+
+        if (sessionMode === 'online') {
+            updateData.meeting_url = this.generateMeetingUrl(id);
+        } else {
+            updateData.meeting_url = null;
+        }
+
         supabase
             .from('appointments')
-            .update({ status: 'confirmed', booked_at: (function() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + 'T' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0'); })() })
+            .update(updateData)
             .eq('id', id)
             .then(function (result) {
                 if (result.error) {
                     if (result.error.message && result.error.message.indexOf('overlap') !== -1) {
-                        alert('Nie mo\u017Cna zaakceptowa\u0107 \u2014 istniej\u0105cy termin koliduje z propozycj\u0105. '
-                            + 'Usu\u0144 koliduj\u0105cy wolny termin i spr\u00F3buj ponownie.');
+                        alert('Nie mo\u017Cna zaakceptowa\u0107 \u2014 istniej\u0105cy termin koliduje z propozycj\u0105. Usu\u0144 koliduj\u0105cy wolny termin i spr\u00F3buj ponownie.');
                     } else {
                         alert('Nie uda\u0142o si\u0119 zaakceptowa\u0107 propozycji.');
                     }
