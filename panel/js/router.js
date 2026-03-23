@@ -57,7 +57,7 @@ var Router = {
                 self._routeListeners[i](hash);
             }
         }).catch(function (err) {
-            console.error('Router — błąd sesji:', err);
+            logError('Router — błąd sesji:', err);
             // W razie błędu pokaż login
             self.showView(self.defaultPublic);
         });

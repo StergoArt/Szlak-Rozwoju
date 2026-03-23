@@ -128,7 +128,7 @@ var Account = {
                 }
             })
             .catch(function (err) {
-                console.error('Błąd eksportu danych:', err);
+                logError('Błąd eksportu danych:', err);
                 alert('Wystąpił błąd podczas eksportu danych. Spróbuj ponownie.');
                 if (btn) {
                     btn.disabled = false;
@@ -218,9 +218,8 @@ var Account = {
                 });
             })
             .catch(function (err) {
-                console.error('Błąd usuwania konta:', err);
-                var msg = err.message || 'Nieznany błąd';
-                alert('Wystąpił błąd podczas usuwania konta: ' + msg + '\nSkontaktuj się z administratorem.');
+                logError('Błąd usuwania konta:', err);
+                alert('Wystąpił błąd podczas usuwania konta. Skontaktuj się z administratorem.');
                 if (btn) {
                     btn.disabled = false;
                     btn.textContent = 'Usuń moje konto';

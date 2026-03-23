@@ -78,7 +78,7 @@ var Session = {
 
                 // Weryfikacja: status
                 if (apt.status !== 'booked' && apt.status !== 'confirmed') {
-                    if (info) info.textContent = 'Ta sesja nie jest aktywna (status: ' + apt.status + ').';
+                    if (info) info.textContent = 'Ta sesja nie jest aktywna.';
                     return;
                 }
 
@@ -125,13 +125,13 @@ var Session = {
                 self.loadJitsiScript().then(function () {
                     self.startJitsi();
                 }).catch(function (err) {
-                    console.error('Błąd ładowania Jitsi:', err);
+                    logError('Błąd ładowania Jitsi:', err);
                     if (info) info.textContent = 'Nie udało się załadować wideokonferencji. Użyj linku poniżej.';
                     if (actions) actions.style.display = 'flex';
                 });
             })
             .catch(function (err) {
-                console.error('Błąd ładowania wizyty:', err);
+                logError('Błąd ładowania wizyty:', err);
                 if (info) info.textContent = 'Wystąpił błąd podczas ładowania sesji.';
             });
     },
@@ -214,7 +214,7 @@ var Session = {
                     ' \u2014 Aby zapisa\u0107 rysunki z tablicy, u\u017Cyj eksportu w Excalidraw, a nast\u0119pnie dodaj je jako za\u0142\u0105czniki do notatki z sesji.';
             }
         } catch (err) {
-            console.error('Błąd uruchamiania Jitsi:', err);
+            logError('Błąd uruchamiania Jitsi:', err);
             if (info) info.textContent = 'Nie udało się uruchomić wideokonferencji.';
         }
     },

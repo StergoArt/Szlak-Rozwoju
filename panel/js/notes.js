@@ -13,6 +13,7 @@ var Notes = {
     _appointmentContext: null,
     _clientsLoaded: false,
     pendingAppointmentContext: null,
+    _saveInProgress: false,
 
     // --- Inicjalizacja ---
     init: function () {
@@ -137,7 +138,7 @@ var Notes = {
             .order('full_name', { ascending: true })
             .then(function (result) {
                 if (result.error) {
-                    console.error('Błąd pobierania klientów:', result.error);
+                    logError('Błąd pobierania klientów:', result.error);
                     self.clients = [];
                 } else {
                     self.clients = result.data || [];
@@ -151,7 +152,7 @@ var Notes = {
                 }
             })
             .catch(function (err) {
-                console.error('Wyjątek podczas pobierania klientów:', err);
+                logError('Wyjątek podczas pobierania klientów:', err);
                 self.clients = [];
                 self._clientsLoaded = true;
                 self.renderClients([]);
@@ -277,6 +278,12 @@ var Notes = {
     loadNotes: function (clientId, append) {
         var self = this;
 
+        // Defense-in-depth: klient moze ladowac tylko swoje notatki
+        if (!Auth.isTherapist() && clientId !== Auth.currentUser.id) {
+            logError('Proba dostepu do cudzych notatek');
+            return;
+        }
+
         if (!append) {
             this.offset = 0;
             this.notes = [];
@@ -306,7 +313,7 @@ var Notes = {
                 if (self.activeClientId !== clientId) return;
 
                 if (result.error) {
-                    console.error('Błąd pobierania notatek:', result.error);
+                    logError('Błąd pobierania notatek:', result.error);
                     self.showEmpty('Wystąpił błąd podczas pobierania notatek.');
                     return;
                 }
@@ -323,7 +330,7 @@ var Notes = {
                 }
             })
             .catch(function (err) {
-                console.error('Wyjątek podczas pobierania notatek:', err);
+                logError('Wyjątek podczas pobierania notatek:', err);
                 if (self.activeClientId === clientId) {
                     self.showEmpty('Wystąpił błąd podczas pobierania notatek.');
                 }
@@ -479,7 +486,7 @@ var Notes = {
 
         Attachments.reset();
 
-        var today = new Date().toISOString().split('T')[0];
+        var today = (function() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); })();
         var titleVal = existingNote ? (existingNote.title || '') : '';
         var dateVal = existingNote ? (existingNote.session_date || today) : today;
         var contentVal = existingNote ? (existingNote.content || '') : '';
@@ -671,10 +678,18 @@ var Notes = {
     },
 
     saveNote: function () {
+        // UX guard, not security
+        if (this._saveInProgress) return;
+        this._saveInProgress = true;
+
         var titleEl = document.getElementById('noteTitle');
         var dateEl = document.getElementById('noteDate');
         var contentEl = document.getElementById('noteContent');
         var saveBtn = document.querySelector('[data-action="save-note"]');
+        if (saveBtn) {
+            saveBtn.setAttribute('aria-disabled', 'true');
+            saveBtn.style.cursor = 'not-allowed';
+        }
         var alertEl = document.getElementById('noteFormAlert');
 
         var title = titleEl ? titleEl.value.trim() : '';
@@ -684,11 +699,21 @@ var Notes = {
         if (!title) {
             this.showFormAlert(alertEl, 'Tytu\u0142 notatki jest wymagany.');
             if (titleEl) titleEl.focus();
+            this._saveInProgress = false;
+            if (saveBtn) {
+                saveBtn.removeAttribute('aria-disabled');
+                saveBtn.style.cursor = '';
+            }
             return;
         }
         if (!sessionDate) {
             this.showFormAlert(alertEl, 'Data sesji jest wymagana.');
             if (dateEl) dateEl.focus();
+            this._saveInProgress = false;
+            if (saveBtn) {
+                saveBtn.removeAttribute('aria-disabled');
+                saveBtn.style.cursor = '';
+            }
             return;
         }
 
@@ -724,6 +749,7 @@ var Notes = {
                         .from('notes')
                         .update(noteData)
                         .eq('id', noteId)
+                        .eq('author_id', Auth.currentUser.id)
                         .select('*, note_attachments(id, file_name, file_path, mime_type, file_size)');
                 } else {
                     noteData.id = noteId;
@@ -742,7 +768,12 @@ var Notes = {
                 });
             })
             .then(function () {
+                self._saveInProgress = false;
                 Auth.setLoading(saveBtn, false);
+                if (saveBtn) {
+                    saveBtn.removeAttribute('aria-disabled');
+                    saveBtn.style.cursor = '';
+                }
                 self.editingNote = null;
                 self._appointmentContext = null;
                 self.notes = [];
@@ -751,8 +782,13 @@ var Notes = {
                 self.loadNotes(clientId, false);
             })
             .catch(function (err) {
-                console.error('Błąd zapisu notatki:', err);
+                self._saveInProgress = false;
+                logError('Błąd zapisu notatki:', err);
                 Auth.setLoading(saveBtn, false);
+                if (saveBtn) {
+                    saveBtn.removeAttribute('aria-disabled');
+                    saveBtn.style.cursor = '';
+                }
                 var errMsg = (err && err.message) ? err.message : 'Wyst\u0105pi\u0142 b\u0142\u0105d podczas zapisu notatki.';
                 self.showFormAlert(alertEl, errMsg);
             });
@@ -785,9 +821,10 @@ var Notes = {
             .from('notes')
             .delete()
             .eq('id', noteId)
+            .eq('author_id', Auth.currentUser.id)
             .then(function (result) {
                 if (result.error) {
-                    console.error('Błąd usuwania notatki:', result.error);
+                    logError('Błąd usuwania notatki:', result.error);
                     alert('Nie uda\u0142o si\u0119 usun\u0105\u0107 notatki. Spr\u00F3buj ponownie.');
                     return;
                 }
@@ -803,7 +840,7 @@ var Notes = {
                 Attachments.deleteFiles(filePaths);
             })
             .catch(function (err) {
-                console.error('Wyjątek podczas usuwania notatki:', err);
+                logError('Wyjątek podczas usuwania notatki:', err);
                 alert('Nie uda\u0142o si\u0119 usun\u0105\u0107 notatki. Spr\u00F3buj ponownie.');
             });
     },

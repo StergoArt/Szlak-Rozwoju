@@ -2259,7 +2259,7 @@
                 </div>
                 <button id="chatClose" class="chat-close" aria-label="Zamknij czat">✕</button>
             </div>
-            <div id="chatMessages" class="chat-messages"></div>
+            <div id="chatMessages" class="chat-messages" role="log" aria-live="polite"></div>
             <div id="chatReplies" class="chat-replies"></div>
             <div class="chat-input-bar" id="chatInputBar">
                 <input type="text" id="chatInput" placeholder="Napisz wiadomość..." autocomplete="off">
@@ -2340,7 +2340,6 @@
                 data[key] = value;
             });
 
-            console.log('Formularz wysłany');
             alert('Dziękujemy! Formularz został wysłany. Skontaktujemy się wkrótce.');
 
             // Reset form
@@ -2528,15 +2527,75 @@
             var chatOpened = false;
             var chatInitialized = false;
 
-            function formatMessage(text) {
+            function renderSafeMessage(text, container) {
                 text = String(text);
-                text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-                           .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-                           .replace(/'/g, '&#39;');
-                return text
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/~~(.*?)~~/g, '<del>$1</del>')
-                    .replace(/\n/g, '<br>');
+                var lines = text.split('\n');
+                for (var i = 0; i < lines.length; i++) {
+                    if (i > 0) container.appendChild(document.createElement('br'));
+                    parseInline(lines[i], container);
+                }
+            }
+
+            function parseInline(text, parent) {
+                // Regex matching: **bold**, ~~del~~, _italic (may contain [link](url))_, or [link](url)
+                var re = /(\*\*)(.*?)\1|~~(.*?)~~|_(.*?)_|\[([^\]]+)\]\(([^)]+)\)/g;
+                var last = 0;
+                var m;
+                while ((m = re.exec(text)) !== null) {
+                    // Append plain text before this match
+                    if (m.index > last) {
+                        parent.appendChild(document.createTextNode(text.substring(last, m.index)));
+                    }
+                    if (m[2] !== undefined) {
+                        // **bold**
+                        var strong = document.createElement('strong');
+                        strong.textContent = m[2];
+                        parent.appendChild(strong);
+                    } else if (m[3] !== undefined) {
+                        // ~~del~~
+                        var del = document.createElement('del');
+                        del.textContent = m[3];
+                        parent.appendChild(del);
+                    } else if (m[4] !== undefined) {
+                        // _italic_ — may contain [link](url) inside
+                        var em = document.createElement('em');
+                        parseInline(m[4], em);
+                        parent.appendChild(em);
+                    } else if (m[5] !== undefined && m[6] !== undefined) {
+                        // [text](url) — safe link with whitelist
+                        var href = m[6];
+                        if (isSafeUrl(href)) {
+                            var a = document.createElement('a');
+                            a.href = href;
+                            a.textContent = m[5];
+                            a.rel = 'noopener noreferrer';
+                            a.target = '_blank';
+                            parent.appendChild(a);
+                        } else {
+                            parent.appendChild(document.createTextNode(m[5]));
+                        }
+                    }
+                    last = re.lastIndex;
+                }
+                // Append remaining plain text
+                if (last < text.length) {
+                    parent.appendChild(document.createTextNode(text.substring(last)));
+                }
+            }
+
+            function isSafeUrl(url) {
+                // Allow relative paths (no protocol)
+                if (url.indexOf(':') === -1) return true;
+                // Allow only http/https with same origin or whitelisted domains
+                if (/^https?:\/\//i.test(url)) {
+                    try {
+                        var parsed = new URL(url, window.location.href);
+                        if (parsed.origin === window.location.origin) return true;
+                        var allowed = ['szlakrozwoju.pl', 'www.szlakrozwoju.pl'];
+                        return allowed.indexOf(parsed.hostname) !== -1;
+                    } catch (e) { return false; }
+                }
+                return false;
             }
 
             function scrollToBottom() {
@@ -2555,7 +2614,7 @@
                 var typing = document.createElement('div');
                 typing.className = 'chat-typing';
                 typing.id = 'chatTypingIndicator';
-                typing.innerHTML = '<span class="chat-typing-dot"></span><span class="chat-typing-dot"></span><span class="chat-typing-dot"></span>';
+                for (var di = 0; di < 3; di++) { var dot = document.createElement('span'); dot.className = 'chat-typing-dot'; typing.appendChild(dot); }
                 chatMessages.appendChild(typing);
                 scrollToBottom();
             }
@@ -2571,7 +2630,7 @@
                     hideTyping();
                     var msg = document.createElement('div');
                     msg.className = 'chat-msg-bot';
-                    msg.innerHTML = formatMessage(text);
+                    renderSafeMessage(text, msg);
                     chatMessages.appendChild(msg);
                     scrollToBottom();
                     if (callback) callback();
@@ -2579,7 +2638,7 @@
             }
 
             function showReplies(replies) {
-                chatReplies.innerHTML = '';
+                while (chatReplies.firstChild) chatReplies.removeChild(chatReplies.firstChild);
                 replies.forEach(function (reply) {
                     var btn = document.createElement('button');
                     btn.className = 'chat-reply-btn' + (reply.cta ? ' chat-reply-cta' : '');
@@ -2593,7 +2652,7 @@
 
             function handleReply(reply) {
                 addUserMessage(reply.text);
-                chatReplies.innerHTML = '';
+                while (chatReplies.firstChild) chatReplies.removeChild(chatReplies.firstChild);
 
                 if (reply.target === 'scrollToContact') {
                     setTimeout(function () {
@@ -2663,7 +2722,7 @@
                 if (chatMode === 'buttons') {
                     chatUserData.message = text;
                     addUserMessage(text);
-                    chatReplies.innerHTML = '';
+                    while (chatReplies.firstChild) chatReplies.removeChild(chatReplies.firstChild);
                     addBotMessage('Dziękuję za wiadomość! Aby mogła do Ciebie odpisać, podaj proszę swoje **imię**:', function () {
                         chatMode = 'collecting_name';
                         chatInput.focus();

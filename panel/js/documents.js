@@ -52,14 +52,26 @@ var Documents = {
             list.appendChild(spinner);
         }
 
-        supabase
+        // Defense-in-depth: klient widzi tylko swoje dokumenty
+        var isTherapist = Auth.isTherapist();
+        var selectStr = isTherapist
+            ? '*, note:notes!note_attachments_note_id_fkey(title, session_date, client:profiles!notes_client_id_fkey(full_name))'
+            : '*, note:notes!inner!note_attachments_note_id_fkey(title, session_date, client:profiles!notes_client_id_fkey(full_name))';
+
+        var query = supabase
             .from('note_attachments')
-            .select('*, note:notes!note_attachments_note_id_fkey(title, session_date, client:profiles!notes_client_id_fkey(full_name))')
+            .select(selectStr);
+
+        if (!isTherapist) {
+            query = query.eq('note.client_id', Auth.currentUser.id);
+        }
+
+        query
             .order('created_at', { ascending: false })
             .range(this._offset, this._offset + this._limit - 1)
             .then(function (result) {
                 if (result.error) {
-                    console.error('B\u0142\u0105d \u0142adowania dokument\u00F3w:', result.error);
+                    logError('B\u0142\u0105d \u0142adowania dokument\u00F3w:', result.error);
                     self.renderEmpty('Wyst\u0105pi\u0142 b\u0142\u0105d podczas \u0142adowania dokument\u00F3w.');
                     return;
                 }
@@ -72,7 +84,7 @@ var Documents = {
                 self.renderDocuments();
             })
             .catch(function (err) {
-                console.error('Wyj\u0105tek dokument\u00F3w:', err);
+                logError('Wyj\u0105tek dokument\u00F3w:', err);
                 self.renderEmpty('Wyst\u0105pi\u0142 b\u0142\u0105d po\u0142\u0105czenia.');
             });
     },

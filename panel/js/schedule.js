@@ -172,13 +172,13 @@ var Schedule = {
             .order('full_name', { ascending: true })
             .then(function (result) {
                 if (result.error) {
-                    console.error('Błąd ładowania klientów:', result.error);
+                    logError('Błąd ładowania klientów:', result.error);
                     return;
                 }
                 self._clients = result.data || [];
                 self._clientsLoaded = true;
             }).catch(function (err) {
-                console.error('Błąd ładowania klientów:', err);
+                logError('Błąd ładowania klientów:', err);
             });
     },
 
@@ -281,7 +281,7 @@ var Schedule = {
         query.then(function (result) {
             if (self._loadId !== loadId) return;
             if (result.error) {
-                console.error('Błąd ładowania grafiku:', result.error);
+                logError('Błąd ładowania grafiku:', result.error);
                 self.appointments = [];
             } else {
                 self.appointments = result.data || [];
@@ -289,7 +289,7 @@ var Schedule = {
             self.renderWeekGrid();
         }).catch(function (err) {
             if (self._loadId !== loadId) return;
-            console.error('Błąd ładowania grafiku:', err);
+            logError('Błąd ładowania grafiku:', err);
             self.appointments = [];
             self.renderWeekGrid();
         });
@@ -311,14 +311,14 @@ var Schedule = {
             .order('start_time', { ascending: true })
             .then(function (result) {
                 if (result.error) {
-                    console.error('Błąd ładowania wizyt:', result.error);
+                    logError('Błąd ładowania wizyt:', result.error);
                     self.myAppointments = [];
                 } else {
                     self.myAppointments = result.data || [];
                 }
                 self.renderMyAppointments();
             }).catch(function (err) {
-                console.error('Błąd ładowania wizyt:', err);
+                logError('Błąd ładowania wizyt:', err);
             });
     },
 
@@ -817,7 +817,7 @@ var Schedule = {
                     meeting_url: (sessionMode === 'online') ? this.generateMeetingUrl(recordId) : null
                 };
                 if (clientId) {
-                    record.booked_at = new Date().toISOString();
+                    record.booked_at = (function() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + 'T' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0'); })();
                 }
                 records.push(record);
             }
@@ -844,7 +844,7 @@ var Schedule = {
                 self.loadWeekAppointments();
             }).catch(function (err) {
                 if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Zapisz'; }
-                console.error('Błąd zapisu slotu:', err);
+                logError('Błąd zapisu slotu:', err);
                 self.showSlotAlert('Wyst\u0105pi\u0142 b\u0142\u0105d.');
             });
     },
@@ -868,12 +868,12 @@ var Schedule = {
             .then(function (result) {
                 if (result.error) {
                     alert('Nie uda\u0142o si\u0119 usun\u0105\u0107 terminu.');
-                    console.error(result.error);
+                    logError('Błąd usuwania terminu:', result.error);
                     return;
                 }
                 self.loadWeekAppointments();
             }).catch(function (err) {
-                console.error('Błąd usuwania:', err);
+                logError('Błąd usuwania:', err);
             });
     },
 
@@ -899,12 +899,12 @@ var Schedule = {
             .then(function (result) {
                 if (result.error) {
                     alert('Nie uda\u0142o si\u0119 zmieni\u0107 statusu.');
-                    console.error(result.error);
+                    logError('Błąd aktualizacji statusu:', result.error);
                     return;
                 }
                 self.loadWeekAppointments();
             }).catch(function (err) {
-                console.error('Błąd aktualizacji statusu:', err);
+                logError('Błąd aktualizacji statusu:', err);
             });
     },
 
@@ -958,13 +958,13 @@ var Schedule = {
                         msg = 'Niekt\u00F3re terminy nak\u0142adaj\u0105 si\u0119 z istniej\u0105cymi.';
                     }
                     alert(msg);
-                    console.error(result.error);
+                    logError('Błąd kopiowania tygodnia:', result.error);
                     return;
                 }
                 alert('Skopiowano ' + toCopy.length + ' termin\u00F3w na nast\u0119pny tydzie\u0144.');
                 self.goToWeek(self.weekOffset + 1);
             }).catch(function (err) {
-                console.error('Błąd kopiowania:', err);
+                logError('Błąd kopiowania:', err);
                 alert('Wyst\u0105pi\u0142 b\u0142\u0105d podczas kopiowania.');
             });
     },
@@ -1055,7 +1055,7 @@ var Schedule = {
                 self.loadMyAppointments();
             }).catch(function (err) {
                 if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = 'Zarezerwuj'; }
-                console.error('Błąd rezerwacji:', err);
+                logError('Błąd rezerwacji:', err);
                 self.hideBookingDialog();
                 self.showErrorModal('Wyst\u0105pi\u0142 b\u0142\u0105d po\u0142\u0105czenia. Spr\u00F3buj ponownie.');
                 self.loadWeekAppointments();
@@ -1102,6 +1102,7 @@ var Schedule = {
             .from('appointments')
             .update({ status: 'cancelled_by_client' })
             .eq('id', id)
+            .eq('client_id', Auth.currentUser.id) // Defense-in-depth
             .then(function (result) {
                 if (result.error) {
                     if (result.error.code === '42501' || (result.error.message && result.error.message.indexOf('policy') !== -1)) {
@@ -1109,13 +1110,13 @@ var Schedule = {
                     } else {
                         alert('Nie uda\u0142o si\u0119 odwo\u0142a\u0107 wizyty.');
                     }
-                    console.error(result.error);
+                    logError('Błąd anulowania wizyty:', result.error);
                     return;
                 }
                 self.loadMyAppointments();
                 self.loadWeekAppointments();
             }).catch(function (err) {
-                console.error('Błąd anulowania:', err);
+                logError('Błąd anulowania:', err);
             });
     },
 
@@ -1397,8 +1398,16 @@ var Schedule = {
                 .then(function (result) {
                     if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Wy\u015Blij propozycj\u0119'; }
                     if (result.error) {
-                        self.showRequestAlert('Nie uda\u0142o si\u0119 wys\u0142a\u0107 propozycji.');
-                        console.error(result.error);
+                        logError('Błąd wysyłania propozycji:', result.error);
+                        var userMsg;
+                        if (result.error.message && result.error.message.indexOf('propozycji') !== -1) {
+                            userMsg = result.error.message;
+                        } else if (result.error.code === '23514' || result.error.code === 'P0001') {
+                            userMsg = result.error.message || 'Nie uda\u0142o si\u0119 wys\u0142a\u0107 propozycji.';
+                        } else {
+                            userMsg = 'Nie uda\u0142o si\u0119 wys\u0142a\u0107 propozycji. Spr\u00F3buj ponownie.';
+                        }
+                        self.showRequestAlert(userMsg);
                         return;
                     }
                     self.hideRequestForm();
@@ -1406,7 +1415,7 @@ var Schedule = {
                     self.loadMyAppointments();
                 }).catch(function (err) {
                     if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Wy\u015Blij propozycj\u0119'; }
-                    console.error('Błąd wysyłania propozycji:', err);
+                    logError('Błąd wysyłania propozycji:', err);
                     self.showRequestAlert('Wyst\u0105pi\u0142 b\u0142\u0105d po\u0142\u0105czenia.');
                 });
         }
@@ -1434,7 +1443,7 @@ var Schedule = {
         if (!confirm('Zaakceptowa\u0107 t\u0119 propozycj\u0119 terminu?')) return;
         supabase
             .from('appointments')
-            .update({ status: 'confirmed', booked_at: new Date().toISOString() })
+            .update({ status: 'confirmed', booked_at: (function() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + 'T' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0'); })() })
             .eq('id', id)
             .then(function (result) {
                 if (result.error) {
@@ -1444,12 +1453,12 @@ var Schedule = {
                     } else {
                         alert('Nie uda\u0142o si\u0119 zaakceptowa\u0107 propozycji.');
                     }
-                    console.error(result.error);
+                    logError('Błąd akceptacji propozycji:', result.error);
                     return;
                 }
                 self.loadWeekAppointments();
             }).catch(function (err) {
-                console.error('Błąd akceptacji:', err);
+                logError('Błąd akceptacji:', err);
             });
     },
 
@@ -1463,12 +1472,12 @@ var Schedule = {
             .then(function (result) {
                 if (result.error) {
                     alert('Nie uda\u0142o si\u0119 odrzuci\u0107 propozycji.');
-                    console.error(result.error);
+                    logError('Błąd odrzucenia propozycji:', result.error);
                     return;
                 }
                 self.loadWeekAppointments();
             }).catch(function (err) {
-                console.error('Błąd odrzucenia:', err);
+                logError('Błąd odrzucenia:', err);
             });
     },
 
@@ -1480,16 +1489,17 @@ var Schedule = {
             .from('appointments')
             .delete()
             .eq('id', id)
+            .eq('client_id', Auth.currentUser.id) // Defense-in-depth
             .then(function (result) {
                 if (result.error) {
                     alert('Nie uda\u0142o si\u0119 anulowa\u0107 propozycji.');
-                    console.error(result.error);
+                    logError('Błąd anulowania propozycji:', result.error);
                     return;
                 }
                 self.loadMyAppointments();
                 self.loadWeekAppointments();
             }).catch(function (err) {
-                console.error('Błąd anulowania propozycji:', err);
+                logError('Błąd anulowania propozycji:', err);
             });
     },
 
@@ -1508,7 +1518,7 @@ var Schedule = {
                     self._therapistId = result.data[0].id;
                 }
             }).catch(function (err) {
-                console.error('Błąd ładowania ID terapeuty:', err);
+                logError('Błąd ładowania ID terapeuty:', err);
             });
     }
 };

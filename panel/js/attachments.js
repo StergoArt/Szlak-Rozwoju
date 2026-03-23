@@ -218,7 +218,7 @@ var Attachments = {
                 .then(function (result) {
                     entry.uploading = false;
                     if (result.error) {
-                        console.error('Błąd uploadu pliku ' + entry.name + ':', result.error);
+                        logError('Błąd uploadu pliku ' + entry.name + ':', result.error);
                         entry.error = true;
                         return null;
                     }
@@ -233,7 +233,7 @@ var Attachments = {
                 .catch(function (err) {
                     entry.uploading = false;
                     entry.error = true;
-                    console.error('Wyjątek podczas uploadu pliku ' + entry.name + ':', err);
+                    logError('Wyjątek podczas uploadu pliku ' + entry.name + ':', err);
                     return null;
                 });
         });
@@ -265,7 +265,7 @@ var Attachments = {
             .insert(rows)
             .then(function (result) {
                 if (result.error) {
-                    console.error('Błąd zapisu metadanych załączników:', result.error);
+                    logError('Błąd zapisu metadanych załączników:', result.error);
                     throw result.error;
                 }
                 return result;
@@ -278,7 +278,7 @@ var Attachments = {
             .createSignedUrl(filePath, 3600)
             .then(function (result) {
                 if (result.error) {
-                    console.error('Błąd generowania signed URL:', result.error);
+                    logError('Błąd generowania signed URL:', result.error);
                     return null;
                 }
                 return result.data.signedUrl;
@@ -366,11 +366,11 @@ var Attachments = {
             .remove(filePaths)
             .then(function (result) {
                 if (result.error) {
-                    console.error('Błąd usuwania plików ze Storage:', result.error);
+                    logError('Błąd usuwania plików ze Storage:', result.error);
                 }
             })
             .catch(function (err) {
-                console.error('Wyjątek podczas usuwania plików ze Storage:', err);
+                logError('Wyjątek podczas usuwania plików ze Storage:', err);
             });
     },
 

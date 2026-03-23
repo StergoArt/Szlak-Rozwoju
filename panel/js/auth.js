@@ -105,8 +105,9 @@ const Auth = {
             return;
         }
 
-        if (password.length < 8) {
-            this.showAlert(alert, 'error', 'Hasło musi mieć co najmniej 8 znaków.');
+        var pwError = this.validatePasswordStrength(password);
+        if (pwError) {
+            this.showAlert(alert, 'error', pwError);
             return;
         }
 
@@ -120,7 +121,7 @@ const Auth = {
                     full_name: fullName,
                     phone: phone,
                     rodo_consent: true,
-                    rodo_consent_at: new Date().toISOString()
+                    rodo_consent_at: (function() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + 'T' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0'); })()
                 }
             }
         });
@@ -179,8 +180,9 @@ const Auth = {
 
         this.hideAlert(alert);
 
-        if (password.length < 8) {
-            this.showAlert(alert, 'error', 'Hasło musi mieć co najmniej 8 znaków.');
+        var pwError = this.validatePasswordStrength(password);
+        if (pwError) {
+            this.showAlert(alert, 'error', pwError);
             return;
         }
         if (password !== passwordConfirm) {
@@ -203,7 +205,7 @@ const Auth = {
         this.showAlert(alert, 'success', 'Hasło zostało zmienione. Za chwilę zostaniesz przekierowany do logowania.');
         setTimeout(function () {
             supabase.auth.signOut(); // → onSignOut() → navigate #/login
-        }, 2000);
+        }, 500);
     },
 
     async onSignIn(session) {
@@ -308,6 +310,14 @@ const Auth = {
         }
     },
 
+    validatePasswordStrength: function(password) {
+        if (password.length < 8) return 'Hasło musi mieć co najmniej 8 znaków.';
+        if (!/[A-Z]/.test(password)) return 'Hasło musi zawierać co najmniej jedną wielką literę.';
+        if (!/[0-9]/.test(password)) return 'Hasło musi zawierać co najmniej jedną cyfrę.';
+        if (!/[^a-zA-Z0-9]/.test(password)) return 'Hasło musi zawierać co najmniej jeden znak specjalny (!@#$%^&* itp.).';
+        return null;
+    },
+
     translateError(msg) {
         var translations = {
             'Invalid login credentials': 'Nieprawidłowy email lub hasło.',
@@ -318,6 +328,6 @@ const Auth = {
             'New password should be different from the old password': 'Nowe hasło musi się różnić od poprzedniego.',
             'For security purposes, you can only request this once every 60 seconds': 'Ze względów bezpieczeństwa możesz wysłać żądanie raz na 60 sekund.',
         };
-        return translations[msg] || ('Wystąpił błąd: ' + msg);
+        return translations[msg] || 'Wystąpił nieoczekiwany błąd. Spróbuj ponownie lub skontaktuj się z administratorem.';
     }
 };

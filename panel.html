@@ -98,7 +98,7 @@
                     <h2>Zaloguj się</h2>
                     <p class="auth-subtitle">Witaj w panelu klienta Szlak Rozwoju</p>
 
-                    <div id="loginAlert" class="alert"></div>
+                    <div id="loginAlert" class="alert" role="alert"></div>
 
                     <form id="loginForm">
                         <div class="form-group">
@@ -128,7 +128,7 @@
                 <div class="auth-card">
                     <h2>Resetowanie hasła</h2>
                     <p class="auth-subtitle">Podaj adres email powiązany z kontem</p>
-                    <div id="forgotAlert" class="alert"></div>
+                    <div id="forgotAlert" class="alert" role="alert"></div>
                     <form id="forgotForm">
                         <div class="form-group">
                             <label for="forgotEmail">Email</label>
@@ -149,11 +149,11 @@
                 <div class="auth-card">
                     <h2>Nowe hasło</h2>
                     <p class="auth-subtitle">Ustaw nowe hasło do konta</p>
-                    <div id="resetAlert" class="alert"></div>
+                    <div id="resetAlert" class="alert" role="alert"></div>
                     <form id="resetForm">
                         <div class="form-group">
                             <label for="resetPassword">Nowe hasło</label>
-                            <input type="password" id="resetPassword" placeholder="Min. 6 znaków" required minlength="8" autocomplete="new-password">
+                            <input type="password" id="resetPassword" placeholder="Min. 6 znaków" required minlength="8" autocomplete="new-password" aria-describedby="resetAlert">
                         </div>
                         <div class="form-group">
                             <label for="resetPasswordConfirm">Powtórz hasło</label>
@@ -172,7 +172,7 @@
                     <h2>Zarejestruj się</h2>
                     <p class="auth-subtitle">Utwórz konto w panelu Szlak Rozwoju</p>
 
-                    <div id="registerAlert" class="alert"></div>
+                    <div id="registerAlert" class="alert" role="alert"></div>
 
                     <form id="registerForm">
                         <div class="form-group">
@@ -189,7 +189,7 @@
                         </div>
                         <div class="form-group">
                             <label for="registerPassword">Hasło</label>
-                            <input type="password" id="registerPassword" placeholder="Min. 8 znaków" required minlength="8" autocomplete="new-password">
+                            <input type="password" id="registerPassword" placeholder="Min. 8 znaków" required minlength="8" autocomplete="new-password" aria-describedby="registerAlert">
                         </div>
                         <div class="form-group" style="margin-top: 8px;">
                             <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 13px; color: var(--color-text-light); line-height: 1.5;">
@@ -410,7 +410,7 @@
         <div class="booking-dialog-content slot-form-content">
             <h3 id="requestFormTitle">Zaproponuj termin</h3>
             <form id="requestForm">
-                <div id="requestFormAlert" class="note-form-alert"></div>
+                <div id="requestFormAlert" class="note-form-alert" role="alert"></div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="requestDate">Preferowana data</label>
@@ -459,7 +459,7 @@
         <div class="booking-dialog-content slot-form-content">
             <h3 id="slotFormTitle">Nowy termin</h3>
             <form id="slotForm">
-                <div id="slotFormAlert" class="note-form-alert"></div>
+                <div id="slotFormAlert" class="note-form-alert" role="alert"></div>
                 <div class="form-group">
                     <div class="slot-mode-toggle">
                         <label class="slot-mode-option">
