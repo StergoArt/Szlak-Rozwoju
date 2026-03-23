@@ -294,13 +294,35 @@ var Schedule = {
         var clientRequest = document.getElementById('clientRequestSection');
 
         if (Auth.isTherapist()) {
-            if (title) title.textContent = 'Grafik wizyt';
+            if (title) {
+                var badge = document.getElementById('schedulePendingBadge');
+                title.textContent = 'Grafik wizyt ';
+                if (badge) title.appendChild(badge);
+            }
             if (actions) actions.style.display = 'flex';
             if (myAppts) myAppts.style.display = 'none';
             if (clientRequest) clientRequest.style.display = 'none';
             if (!this._clientsLoaded) {
                 this.loadClients();
             }
+            // Badge & polling
+            this.updatePendingCount();
+            if (this._pendingInterval) clearInterval(this._pendingInterval);
+            var self = this;
+            this._pendingInterval = setInterval(function() {
+                self.updatePendingCount();
+            }, 60000);
+            // Cleanup polling when leaving schedule view
+            var onHashChange = function() {
+                if (window.location.hash.indexOf('#/schedule') !== 0) {
+                    if (self._pendingInterval) {
+                        clearInterval(self._pendingInterval);
+                        self._pendingInterval = null;
+                    }
+                    window.removeEventListener('hashchange', onHashChange);
+                }
+            };
+            window.addEventListener('hashchange', onHashChange);
         } else {
             if (title) title.textContent = 'Rezerwacja wizyty';
             if (actions) actions.style.display = 'none';
@@ -427,6 +449,26 @@ var Schedule = {
                 self.renderMyAppointments();
             }).catch(function (err) {
                 logError('Błąd ładowania wizyt:', err);
+            });
+    },
+
+    updatePendingCount: function() {
+        if (!Auth.isTherapist()) return;
+        var todayStr = this.formatDateForDB(new Date());
+        supabase
+            .from('appointments')
+            .select('id', { count: 'exact', head: true })
+            .in('status', ['booked', 'requested'])
+            .gte('slot_date', todayStr)
+            .then(function(result) {
+                var count = (result && result.count) || 0;
+                var badge = document.getElementById('schedulePendingBadge');
+                if (badge) {
+                    badge.textContent = count > 0 ? count : '';
+                    badge.style.display = count > 0 ? 'inline-flex' : 'none';
+                }
+            }).catch(function(err) {
+                logError('Błąd ładowania oczekujących:', err);
             });
     },
 
