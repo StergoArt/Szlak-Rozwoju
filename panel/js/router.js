@@ -2,7 +2,7 @@
 var Router = {
     routes: {
         public: ['#/login', '#/register', '#/forgot-password'],
-        protected: ['#/dashboard', '#/notes', '#/schedule', '#/session', '#/reset-password', '#/documents']
+        protected: ['#/dashboard', '#/notes', '#/schedule', '#/session', '#/reset-password', '#/documents', '#/account']
     },
 
     defaultPublic: '#/login',

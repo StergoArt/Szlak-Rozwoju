@@ -1,6 +1,6 @@
 <IfModule mod_headers.c>
     # Content Security Policy
-    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://meet.jit.si; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.emailjs.com; frame-src https://meet.jit.si; frame-ancestors 'none';"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://meet.jit.si; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://api.emailjs.com; frame-src https://meet.jit.si; frame-ancestors 'none';"
 
     # Clickjacking protection
     Header set X-Frame-Options "SAMEORIGIN"

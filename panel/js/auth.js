@@ -98,6 +98,13 @@ const Auth = {
 
         this.hideAlert(alert);
 
+        // Walidacja zgody RODO
+        var consentCheckbox = document.getElementById('registerConsent');
+        if (!consentCheckbox || !consentCheckbox.checked) {
+            this.showAlert(alert, 'error', 'Proszę zaakceptować Politykę Prywatności.');
+            return;
+        }
+
         if (password.length < 8) {
             this.showAlert(alert, 'error', 'Hasło musi mieć co najmniej 8 znaków.');
             return;
@@ -111,7 +118,9 @@ const Auth = {
             options: {
                 data: {
                     full_name: fullName,
-                    phone: phone
+                    phone: phone,
+                    rodo_consent: true,
+                    rodo_consent_at: new Date().toISOString()
                 }
             }
         });
