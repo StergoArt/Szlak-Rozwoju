@@ -385,6 +385,23 @@
                 <button id="scheduleToday" class="btn-secondary btn-sm schedule-today-btn">Dziś</button>
             </div>
 
+            <!-- Toggle tydzień/miesiąc -->
+            <div class="schedule-view-toggle" id="scheduleViewToggle">
+                <button class="view-toggle-btn active" data-view="week">Tydzień</button>
+                <button class="view-toggle-btn" data-view="month">Miesiąc</button>
+            </div>
+
+            <!-- Nawigacja miesiąca (hidden by default) -->
+            <div class="schedule-nav schedule-month-nav" id="scheduleMonthNav" style="display:none;">
+                <button id="scheduleMonthPrev" class="btn-icon-nav" title="Poprzedni miesiąc" aria-label="Poprzedni miesiąc">&lsaquo;</button>
+                <span id="scheduleMonthLabel" class="schedule-week-label"></span>
+                <button id="scheduleMonthNext" class="btn-icon-nav" title="Następny miesiąc" aria-label="Następny miesiąc">&rsaquo;</button>
+                <button id="scheduleMonthToday" class="btn-secondary btn-sm schedule-today-btn">Dziś</button>
+            </div>
+
+            <!-- Siatka miesięczna -->
+            <div id="scheduleMonthGrid" class="schedule-month-grid" style="display:none;"></div>
+
             <!-- Desktop: siatka tygodniowa -->
             <div id="scheduleGrid" class="schedule-grid"></div>
 

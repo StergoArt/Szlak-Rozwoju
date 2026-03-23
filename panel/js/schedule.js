@@ -12,6 +12,16 @@ var Schedule = {
     _clients: [],
     _clientsLoaded: false,
     _therapistId: null,
+    _viewMode: 'week',
+    monthOffset: 0,
+    currentMonthStart: null,
+    monthAppointments: [],
+    _monthAppointmentMap: {},
+    _monthLoadId: 0,
+    _monthCacheKey: null,
+    _monthCacheTime: 0,
+    _suppressMobileDayReset: false,
+    _pendingInterval: null,
 
     // Stałe
     STATUS_LABELS: {
@@ -43,6 +53,9 @@ var Schedule = {
     DAYS_SHORT: ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'],
     MONTHS_PL: ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca',
         'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'],
+    MONTHS_NOM: ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec',
+        'Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'],
+    MONTH_CACHE_TTL: 120000,
 
     // ===== Inicjalizacja =====
     init: function () {
