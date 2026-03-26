@@ -300,7 +300,7 @@ footerLogo.onerror = function () {
             try {
                 var parsed = new URL(url, window.location.href);
                 if (parsed.origin === window.location.origin) return true;
-                var allowed = ['szlakrozwoju.pl', 'www.szlakrozwoju.pl'];
+                var allowed = ['szlak-rozwoju.pl', 'www.szlak-rozwoju.pl'];
                 return allowed.indexOf(parsed.hostname) !== -1;
             } catch (e) { return false; }
         }
