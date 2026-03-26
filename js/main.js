@@ -45,24 +45,61 @@ document.querySelectorAll('.faq-item').forEach(item => {
     });
 });
 
-// Form Submit
+// Toast Notification
+function showToast(message, type) {
+    var existing = document.querySelector('.toast-notification');
+    if (existing) existing.remove();
+    var toast = document.createElement('div');
+    toast.className = 'toast-notification toast-notification--' + (type || 'success');
+    toast.setAttribute('role', 'alert');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    requestAnimationFrame(function () { toast.classList.add('toast-notification--visible'); });
+    setTimeout(function () {
+        toast.classList.remove('toast-notification--visible');
+        setTimeout(function () { toast.remove(); }, 300);
+    }, 5000);
+}
+
+// Form Submit (EmailJS)
 document.getElementById('contactForm').addEventListener('submit', function (e) {
     e.preventDefault();
 
+    var honey = document.querySelector('[name="_honey"]');
+    if (honey && honey.value) return;
+
     var consentCheckbox = document.getElementById('rodoConsent');
     if (!consentCheckbox || !consentCheckbox.checked) {
-        alert('Proszę wyrazić zgodę na przetwarzanie danych osobowych.');
+        showToast('Proszę wyrazić zgodę na przetwarzanie danych osobowych.', 'error');
         return;
     }
 
-    const formData = new FormData(this);
-    const data = {};
-    formData.forEach((value, key) => {
-        data[key] = value;
-    });
+    var submitBtn = this.querySelector('button[type="submit"]');
+    var originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Wysyłanie...';
 
-    alert('Dziękujemy! Formularz został wysłany. Skontaktujemy się wkrótce.');
-    this.reset();
+    var formData = new FormData(this);
+    var serviceType = formData.get('serviceType') || 'nie wybrano';
+    var age = formData.get('participantAge') || 'nie podano';
+    var msg = formData.get('message') || '';
+    var formattedMessage = 'Usługa: ' + serviceType + '\nWiek uczestnika: ' + age + '\n\n' + msg;
+
+    var form = this;
+    emailjs.send('service_vqv8i1b', 'service_vqfs743', {
+        user_name: formData.get('name'),
+        user_contact: formData.get('email') + (formData.get('phone') ? ' / ' + formData.get('phone') : ''),
+        message: formattedMessage,
+        chat_history: ''
+    }, 'wJ2SpllarvSg60jLo').then(function () {
+        showToast('Dziękujemy! Formularz został wysłany. Skontaktujemy się wkrótce.', 'success');
+        form.reset();
+    }, function () {
+        showToast('Nie udało się wysłać formularza. Napisz na biuro@szlak-rozwoju.pl', 'error');
+    }).finally(function () {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+    });
 });
 
 // Fade In Animation on Scroll

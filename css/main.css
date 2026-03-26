@@ -1512,3 +1512,43 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             z-index: 10000;
         }
+
+/* ===== Honeypot (anti-spam) ===== */
+.form-honeypot {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    height: 0;
+    width: 0;
+    pointer-events: none;
+}
+
+/* ===== Toast Notifications ===== */
+.toast-notification {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    z-index: 10001;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    max-width: 90vw;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+.toast-notification--visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+.toast-notification--success {
+    background: #38A169;
+}
+.toast-notification--error {
+    background: #E53E3E;
+}
