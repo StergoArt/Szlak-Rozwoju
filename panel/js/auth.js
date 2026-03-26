@@ -259,13 +259,13 @@ const Auth = {
         const navUserRole = document.getElementById('navUserRole');
 
         if (this.currentUser) {
-            if (navAuth) navAuth.style.display = 'flex';
-            if (navGuest) navGuest.style.display = 'none';
+            if (navAuth) navAuth.classList.remove('u-hidden');
+            if (navGuest) navGuest.classList.add('u-hidden');
             if (navUserName) navUserName.textContent = this.getDisplayName();
             if (navUserRole) navUserRole.textContent = this.getRoleLabel();
         } else {
-            if (navAuth) navAuth.style.display = 'none';
-            if (navGuest) navGuest.style.display = 'flex';
+            if (navAuth) navAuth.classList.add('u-hidden');
+            if (navGuest) navGuest.classList.remove('u-hidden');
         }
     },
 

@@ -23,13 +23,13 @@ document.querySelectorAll('.service-card').forEach(card => {
             if (otherCard !== this) {
                 otherCard.classList.remove('active');
                 otherCard.querySelector('.service-details').classList.remove('active');
-                otherCard.querySelector('.service-toggle').style.display = 'block';
+                otherCard.querySelector('.service-toggle').classList.remove('u-hidden');
             }
         });
 
         this.classList.toggle('active');
         details.classList.toggle('active');
-        toggle.style.display = details.classList.contains('active') ? 'none' : 'block';
+        details.classList.contains('active') ? toggle.classList.add('u-hidden') : toggle.classList.remove('u-hidden');
     });
 });
 
@@ -561,12 +561,12 @@ footerLogo.onerror = function () {
 (function() {
     if (!localStorage.getItem('rodo_banner_accepted')) {
         var banner = document.getElementById('privacyBanner');
-        if (banner) banner.style.display = 'block';
+        if (banner) banner.classList.remove('u-hidden');
     }
     var closeBtn = document.getElementById('privacyBannerClose');
     if (closeBtn) {
         closeBtn.addEventListener('click', function() {
-            document.getElementById('privacyBanner').style.display = 'none';
+            document.getElementById('privacyBanner').classList.add('u-hidden');
             localStorage.setItem('rodo_banner_accepted', '1');
         });
     }

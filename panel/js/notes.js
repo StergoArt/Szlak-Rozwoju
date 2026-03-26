@@ -106,10 +106,10 @@ var Notes = {
         var title = document.getElementById('notesTitle');
         var loadMore = document.getElementById('notesLoadMore');
 
-        if (sidebar) sidebar.style.display = '';
-        if (actions) actions.style.display = 'none';
+        if (sidebar) sidebar.classList.remove('u-hidden');
+        if (actions) actions.classList.add('u-hidden');
         if (title) title.textContent = 'Notatki z sesji';
-        if (loadMore) loadMore.style.display = 'none';
+        if (loadMore) loadMore.classList.add('u-hidden');
 
         this.activeClientId = null;
         this.loadClients();
@@ -165,7 +165,7 @@ var Notes = {
         if (!clientsList) return;
 
         if (clientSearch) {
-            clientSearch.style.display = clients.length > 5 ? '' : 'none';
+            clients.length > 5 ? clientSearch.classList.remove('u-hidden') : clientSearch.classList.add('u-hidden');
         }
 
         while (clientsList.firstChild) clientsList.removeChild(clientsList.firstChild);
@@ -258,7 +258,7 @@ var Notes = {
 
         var actions = document.getElementById('notesActions');
         var clientNameEl = document.getElementById('notesClientName');
-        if (actions) actions.style.display = '';
+        if (actions) actions.classList.remove('u-hidden');
 
         var clientName = '';
         for (var j = 0; j < this.clients.length; j++) {
@@ -326,7 +326,7 @@ var Notes = {
 
                 var loadMore = document.getElementById('notesLoadMore');
                 if (loadMore) {
-                    loadMore.style.display = data.length === self.PAGE_SIZE ? '' : 'none';
+                    data.length === self.PAGE_SIZE ? loadMore.classList.remove('u-hidden') : loadMore.classList.add('u-hidden');
                 }
             })
             .catch(function (err) {
@@ -454,8 +454,8 @@ var Notes = {
         var actions = document.getElementById('notesActions');
         var title = document.getElementById('notesTitle');
 
-        if (sidebar) sidebar.style.display = 'none';
-        if (actions) actions.style.display = 'none';
+        if (sidebar) sidebar.classList.add('u-hidden');
+        if (actions) actions.classList.add('u-hidden');
         if (title) title.textContent = 'Moje notatki z sesji';
 
         this.activeClientId = Auth.currentUser ? Auth.currentUser.id : null;
@@ -618,7 +618,7 @@ var Notes = {
         fileInput.id = 'noteFileInput';
         fileInput.multiple = true;
         fileInput.accept = '.jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.txt';
-        fileInput.style.display = 'none';
+        fileInput.classList.add('u-hidden');
         attGroup.appendChild(fileInput);
 
         form.appendChild(attGroup);
@@ -665,7 +665,7 @@ var Notes = {
         }
 
         var loadMore = document.getElementById('notesLoadMore');
-        if (loadMore) loadMore.style.display = 'none';
+        if (loadMore) loadMore.classList.add('u-hidden');
 
         Attachments.initDropzone(dropzone, 'noteFileInput', previews, alertEl, null);
 
@@ -834,7 +834,7 @@ var Notes = {
 
                 var loadMore = document.getElementById('notesLoadMore');
                 if (loadMore && self.notes.length > 0 && self.notes.length % self.PAGE_SIZE === 0) {
-                    loadMore.style.display = '';
+                    loadMore.classList.remove('u-hidden');
                 }
 
                 Attachments.deleteFiles(filePaths);
@@ -884,7 +884,7 @@ var Notes = {
                 self.renderNotes(self.notes, Auth.isTherapist());
                 var loadMore = document.getElementById('notesLoadMore');
                 if (loadMore && self.notes.length > 0 && self.notes.length % self.PAGE_SIZE === 0) {
-                    loadMore.style.display = '';
+                    loadMore.classList.remove('u-hidden');
                 }
                 return;
             }
@@ -924,7 +924,7 @@ var Notes = {
             if (note && note.note_attachments && note.note_attachments.length > 0) {
                 Attachments.renderAttachments(note.note_attachments, grid);
             } else {
-                grid.style.display = 'none';
+                grid.classList.add('u-hidden');
             }
             grid.setAttribute('data-attachments-rendered', 'true');
         }

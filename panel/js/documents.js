@@ -160,7 +160,7 @@ var Documents = {
             loadMoreBtn.className = 'btn-secondary btn-sm';
             loadMoreBtn.textContent = 'Za\u0142aduj wi\u0119cej';
             loadMoreBtn.style.marginTop = '20px';
-            loadMoreBtn.style.display = 'block';
+            loadMoreBtn.classList.remove('u-hidden');
             loadMoreBtn.style.marginLeft = 'auto';
             loadMoreBtn.style.marginRight = 'auto';
             loadMoreBtn.addEventListener('click', function () {
@@ -219,7 +219,7 @@ var Documents = {
                 var img = document.getElementById('lightboxImg');
                 if (lightbox && img) {
                     img.src = url;
-                    lightbox.style.display = 'flex';
+                    lightbox.classList.remove('u-hidden');
                 }
             } else {
                 // Download

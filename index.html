@@ -244,13 +244,13 @@
     <a href="#main-content" class="skip-to-content">Przejdź do treści</a>
 
     <!-- Banner RODO -->
-    <div id="privacyBanner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#1A202C; color:#fff; padding:16px 24px; z-index:10000; font-family:'Source Sans Pro',sans-serif; font-size:14px; line-height:1.5; box-shadow:0 -4px 20px rgba(0,0,0,0.15);">
-        <div style="max-width:1000px; margin:0 auto; display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-            <p style="flex:1; min-width:200px; margin:0;">
+    <div id="privacyBanner" class="privacy-banner u-hidden">
+        <div class="privacy-banner__inner">
+            <p class="privacy-banner__text">
                 Ta strona korzysta z usług EmailJS (formularz kontaktowy) oraz Supabase (panel klienta).
-                Szczegóły w <a href="polityka-prywatnosci.html" style="color:#4ECDC4; text-decoration:underline;">Polityce Prywatności</a>.
+                Szczegóły w <a href="polityka-prywatnosci.html" class="privacy-banner__link">Polityce Prywatności</a>.
             </p>
-            <button id="privacyBannerClose" style="background:#FFCC00; color:#1A202C; border:none; padding:10px 28px; border-radius:50px; font-weight:600; font-size:14px; cursor:pointer; white-space:nowrap;">Rozumiem</button>
+            <button id="privacyBannerClose" class="privacy-banner__close">Rozumiem</button>
         </div>
     </div>
 
@@ -268,7 +268,7 @@
                 <a href="#pricing">Cennik</a>
                 <a href="#faq">FAQ</a>
                 <a href="#contact">Kontakt</a>
-                <a href="panel.html" style="color: #4ECDC4; font-weight: 600;">Panel Klienta</a>
+                <a href="panel.html" class="nav-link--active">Panel Klienta</a>
             </div>
         </div>
     </nav>
@@ -278,16 +278,16 @@
     <!-- Hero Section -->
     <section id="main-content" class="hero warm-gradient">
         <div class="path-decoration">
-            <div class="path-curve" style="background: #FFCC00; top: 10%; left: 5%;"></div>
-            <div class="path-curve" style="background: #4ECDC4; bottom: 15%; right: 10%;"></div>
-            <div class="path-curve" style="background: #FF6B6B; top: 40%; right: 20%;"></div>
+            <div class="path-curve hero-decoration--1"></div>
+            <div class="path-curve hero-decoration--2"></div>
+            <div class="path-curve hero-decoration--3"></div>
         </div>
 
         <div class="container">
             <div class="hero-content">
                 <div class="fade-in">
                     <h1>Szlak do <span class="highlight">pewności siebie</span> i lepszych relacji</h1>
-                    <p class="hero-subtitle" style="font-size: 1.15em; font-weight: 600; color: #4ECDC4; margin-bottom: 8px;">
+                    <p class="hero-subtitle hero-subtitle--highlight">
                         Gabinet socjoterapii w Żywcu — terapia i TUS dla dzieci, młodzieży i dorosłych
                     </p>
                     <p class="hero-text">
@@ -367,8 +367,8 @@
 
             <div class="services-grid">
                 <!-- Service 1 -->
-                <div class="service-card fade-in" data-service="1" style="--service-color: #FFCC00;">
-                    <div class="service-icon" style="background: linear-gradient(135deg, #FFCC00, #FFB800);">👤</div>
+                <div class="service-card fade-in" data-service="1" data-color="gold">
+                    <div class="service-icon">👤</div>
                     <h3>Socjoterapia Indywidualna</h3>
                     <p class="service-description">Indywidualna praca terapeutyczna dostosowana do potrzeb każdego
                         uczestnika — dziecka,
@@ -382,38 +382,37 @@
                     <div class="service-details">
                         <div class="service-detail-list">
                             <div class="service-detail-item">
-                                <span style="color: #FFCC00;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Dla dzieci (6-12 lat), młodzieży (13-18 lat) i dorosłych</span>
                             </div>
                             <div class="service-detail-item">
-                                <span style="color: #FFCC00;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Sesje: 60 minut, raz w tygodniu</span>
                             </div>
                             <div class="service-detail-item">
-                                <span style="color: #FFCC00;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Praca nad nieśmiałością, lękami, trudnościami w relacjach</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="service-price-box"
-                        style="background: linear-gradient(135deg, rgba(255,204,0,0.15), rgba(255,204,0,0.05));">
+                    <div class="service-price-box">
                         <div>
                             <div class="service-price-label">Cena</div>
                             <div class="service-price">od 140 zł / sesja</div>
                         </div>
-                        <a href="#contact" class="cta-button" style="padding: 12px 28px; font-size: 16px;">Umów
+                        <a href="#contact" class="cta-button cta-button--compact">Umów
                             się</a>
                     </div>
 
-                    <div class="service-toggle" style="color: #FFCC00;">
+                    <div class="service-toggle">
                         Kliknij aby zobaczyć więcej →
                     </div>
                 </div>
 
                 <!-- Service 2 -->
-                <div class="service-card fade-in" data-service="2" style="--service-color: #4ECDC4;">
-                    <div class="service-icon" style="background: linear-gradient(135deg, #4ECDC4, #3BA99C);">👥</div>
+                <div class="service-card fade-in" data-service="2" data-color="turquoise">
+                    <div class="service-icon">👥</div>
                     <h3>Socjoterapia Grupowa</h3>
                     <p class="service-description">Grupowe zajęcia rozwijające umiejętności społeczne i emocjonalne</p>
 
@@ -425,39 +424,38 @@
                     <div class="service-details">
                         <div class="service-detail-list">
                             <div class="service-detail-item">
-                                <span style="color: #4ECDC4;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Grupy wiekowe: dzieci (6-12 lat), młodzież (13-18 lat), dorośli (18+) — od 2 do 6 osób
                                     w grupie</span>
                             </div>
                             <div class="service-detail-item">
-                                <span style="color: #4ECDC4;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Sesje: 75 minut, raz w tygodniu</span>
                             </div>
                             <div class="service-detail-item">
-                                <span style="color: #4ECDC4;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Praca nad komunikacją, współpracą, budowaniem relacji</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="service-price-box"
-                        style="background: linear-gradient(135deg, rgba(78,205,196,0.15), rgba(78,205,196,0.05));">
+                    <div class="service-price-box">
                         <div>
                             <div class="service-price-label">Cena</div>
                             <div class="service-price">90 zł / osoba</div>
                         </div>
-                        <a href="#contact" class="cta-button" style="padding: 12px 28px; font-size: 16px;">Umów
+                        <a href="#contact" class="cta-button cta-button--compact">Umów
                             się</a>
                     </div>
 
-                    <div class="service-toggle" style="color: #4ECDC4;">
+                    <div class="service-toggle">
                         Kliknij aby zobaczyć więcej →
                     </div>
                 </div>
 
                 <!-- Service 3 -->
-                <div class="service-card fade-in" data-service="3" style="--service-color: #FF6B6B;">
-                    <div class="service-icon" style="background: linear-gradient(135deg, #FF6B6B, #E74C3C);">🎯</div>
+                <div class="service-card fade-in" data-service="3" data-color="coral">
+                    <div class="service-icon">🎯</div>
                     <h3>Trening Umiejętności Społecznych (TUS)</h3>
                     <p class="service-description">Praktyczne ćwiczenia rozwijające kompetencje społeczne</p>
 
@@ -469,47 +467,46 @@
                     <div class="service-details">
                         <div class="service-detail-list">
                             <div class="service-detail-item">
-                                <span style="color: #FF6B6B;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Dla dzieci, młodzieży i dorosłych z trudnościami w relacjach — w tym dzieci ze
                                     spektrum autyzmu (ASD) i z zespołem Aspergera</span>
                             </div>
                             <div class="service-detail-item">
-                                <span style="color: #FF6B6B;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Metody: gry, scenki, dyskusje, ćwiczenia praktyczne</span>
                             </div>
                             <div class="service-detail-item">
-                                <span style="color: #FF6B6B;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Asertywność, rozwiązywanie konfliktów, wyrażanie potrzeb</span>
                             </div>
                             <div class="service-detail-item">
-                                <span style="color: #FF6B6B;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Indywidualnie: 50 minut / 120 zł</span>
                             </div>
                             <div class="service-detail-item">
-                                <span style="color: #FF6B6B;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Grupowo (2-6 osób): 60 minut / 100 zł</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="service-price-box"
-                        style="background: linear-gradient(135deg, rgba(255,107,107,0.15), rgba(255,107,107,0.05));">
+                    <div class="service-price-box">
                         <div>
                             <div class="service-price-label">Cena</div>
                             <div class="service-price">od 105 zł</div>
                         </div>
-                        <a href="#contact" class="cta-button" style="padding: 12px 28px; font-size: 16px;">Umów
+                        <a href="#contact" class="cta-button cta-button--compact">Umów
                             się</a>
                     </div>
 
-                    <div class="service-toggle" style="color: #FF6B6B;">
+                    <div class="service-toggle">
                         Kliknij aby zobaczyć więcej →
                     </div>
                 </div>
 
                 <!-- Service 4 -->
-                <div class="service-card fade-in" data-service="4" style="--service-color: #9B59B6;">
-                    <div class="service-icon" style="background: linear-gradient(135deg, #9B59B6, #8E44AD);">⛷️</div>
+                <div class="service-card fade-in" data-service="4" data-color="purple">
+                    <div class="service-icon">⛷️</div>
                     <h3>Zajęcia Ruchowe i Obozy</h3>
                     <p class="service-description">Aktywność fizyczna na świeżym powietrzu łączona z terapią — dla
                         wszystkich grup wiekowych</p>
@@ -521,35 +518,34 @@
                     <div class="service-details">
                         <div class="service-detail-list">
                             <div class="service-detail-item">
-                                <span style="color: #9B59B6;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Sporty zimowe: narty, snowboard, saneczki</span>
                             </div>
                             <div class="service-detail-item">
-                                <span style="color: #9B59B6;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Sporty wodne: kajaki, pływanie, SUP</span>
                             </div>
                             <div class="service-detail-item">
-                                <span style="color: #9B59B6;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Inne: wspinaczka, rower górski, nordic walking</span>
                             </div>
                             <div class="service-detail-item">
-                                <span style="color: #9B59B6;">•</span>
+                                <span class="service-bullet">•</span>
                                 <span>Wyjazdy weekendowe i obozy wakacyjne/zimowe</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="service-price-box"
-                        style="background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(155,89,182,0.05));">
+                    <div class="service-price-box">
                         <div>
                             <div class="service-price-label">Cena</div>
                             <div class="service-price">do uzgodnienia</div>
                         </div>
-                        <a href="#contact" class="cta-button" style="padding: 12px 28px; font-size: 16px;">Umów
+                        <a href="#contact" class="cta-button cta-button--compact">Umów
                             się</a>
                     </div>
 
-                    <div class="service-toggle" style="color: #9B59B6;">
+                    <div class="service-toggle">
                         Kliknij aby zobaczyć więcej →
                     </div>
                 </div>
@@ -569,7 +565,7 @@
 
             <div>
                 <div class="process-step fade-in">
-                    <div class="process-number" style="background: linear-gradient(135deg, #FFCC00, #FFB800);">1</div>
+                    <div class="process-number" data-color="gold">1</div>
                     <div class="process-content">
                         <h4>Bezpłatna konsultacja</h4>
                         <p>20-minutowa rozmowa, podczas której poznaję Twoje potrzeby lub potrzeby Twojego dziecka</p>
@@ -577,7 +573,7 @@
                 </div>
 
                 <div class="process-step reverse fade-in">
-                    <div class="process-number" style="background: linear-gradient(135deg, #4ECDC4, #3BA99C);">2</div>
+                    <div class="process-number" data-color="turquoise">2</div>
                     <div class="process-content">
                         <h4>Diagnoza i plan</h4>
                         <p>Ustalamy wspólnie cele terapii i format pracy (indywidualny/grupowy, online/stacjonarny)</p>
@@ -585,7 +581,7 @@
                 </div>
 
                 <div class="process-step fade-in">
-                    <div class="process-number" style="background: linear-gradient(135deg, #FF6B6B, #E74C3C);">3</div>
+                    <div class="process-number" data-color="coral">3</div>
                     <div class="process-content">
                         <h4>Regularne sesje</h4>
                         <p>Budujemy umiejętności krok po kroku w bezpiecznej, wspierającej atmosferze</p>
@@ -593,7 +589,7 @@
                 </div>
 
                 <div class="process-step reverse fade-in">
-                    <div class="process-number" style="background: linear-gradient(135deg, #9B59B6, #8E44AD);">4</div>
+                    <div class="process-number" data-color="purple">4</div>
                     <div class="process-content">
                         <h4>Monitorowanie postępów</h4>
                         <p>Regularna ewaluacja postępów — spotkania z uczestnikiem, a w przypadku dzieci również z
@@ -602,7 +598,7 @@
                 </div>
 
                 <div class="process-step fade-in">
-                    <div class="process-number" style="background: linear-gradient(135deg, #FFCC00, #FFB800);">5</div>
+                    <div class="process-number" data-color="gold">5</div>
                     <div class="process-content">
                         <h4>Samodzielność</h4>
                         <p>Utrwalanie umiejętności w życiu codziennym i przygotowanie do zakończenia terapii</p>
@@ -614,7 +610,7 @@
 
     <!-- Pricing Section -->
     <section id="pricing" class="warm-gradient py-120">
-        <div class="container" style="max-width: 1000px;">
+        <div class="container container--wide">
             <div class="text-center mb-80">
                 <h2 class="section-title">Cennik</h2>
                 <p class="mt-24 section-subtitle">
@@ -677,44 +673,40 @@
             </div>
 
             <div class="packages-grid">
-                <div class="package-card fade-in"
-                    style="background: linear-gradient(135deg, #FFCC00 0%, #FFB800 100%);">
-                    <h4 style="color: #1A202C;">Pakiet 5 sesji</h4>
-                    <p style="color: #2D3748;">Kup 5 sesji, zapłać za 4</p>
-                    <div class="package-price" style="color: #1A202C;">
+                <div class="package-card package-card--gold fade-in">
+                    <h4>Pakiet 5 sesji</h4>
+                    <p>Kup 5 sesji, zapłać za 4</p>
+                    <div class="package-price">
                         700 zł <span class="package-price-old">800 zł</span>
                     </div>
-                    <div class="package-savings" style="color: #2D3748;">Oszczędzasz 100 zł (12,5%)</div>
+                    <div class="package-savings">Oszczędzasz 100 zł (12,5%)</div>
                 </div>
 
-                <div class="package-card fade-in"
-                    style="background: linear-gradient(135deg, #4ECDC4 0%, #3BA99C 100%);">
-                    <h4 style="color: #FFFFFF;">Pakiet 10 sesji</h4>
-                    <p style="color: #FFFFFF;">Najlepsza cena — rabat 15%</p>
-                    <div class="package-price" style="color: #FFFFFF;">
+                <div class="package-card package-card--turquoise fade-in">
+                    <h4>Pakiet 10 sesji</h4>
+                    <p>Najlepsza cena — rabat 15%</p>
+                    <div class="package-price">
                         1360 zł <span class="package-price-old">1600 zł</span>
                     </div>
-                    <div class="package-savings" style="color: #FFFFFF;">Oszczędzasz 240 zł (15%)</div>
+                    <div class="package-savings">Oszczędzasz 240 zł (15%)</div>
                 </div>
 
-                <div class="package-card fade-in"
-                    style="background: linear-gradient(135deg, #FF6B6B 0%, #E74C3C 100%);">
-                    <h4 style="color: #FFFFFF;">Pakiet 5 sesji TUS</h4>
-                    <p style="color: #FFFFFF;">5 sesji TUS indywidualnego z rabatem</p>
-                    <div class="package-price" style="color: #FFFFFF;">
+                <div class="package-card package-card--coral fade-in">
+                    <h4>Pakiet 5 sesji TUS</h4>
+                    <p>5 sesji TUS indywidualnego z rabatem</p>
+                    <div class="package-price">
                         525 zł <span class="package-price-old">600 zł</span>
                     </div>
-                    <div class="package-savings" style="color: #FFFFFF;">Oszczędzasz 75 zł (12,5%)</div>
+                    <div class="package-savings">Oszczędzasz 75 zł (12,5%)</div>
                 </div>
 
-                <div class="package-card fade-in"
-                    style="background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);">
-                    <h4 style="color: #FFFFFF;">Pakiet 10 sesji TUS</h4>
-                    <p style="color: #FFFFFF;">10 sesji TUS indywidualnego z rabatem</p>
-                    <div class="package-price" style="color: #FFFFFF;">
+                <div class="package-card package-card--red fade-in">
+                    <h4>Pakiet 10 sesji TUS</h4>
+                    <p>10 sesji TUS indywidualnego z rabatem</p>
+                    <div class="package-price">
                         1020 zł <span class="package-price-old">1200 zł</span>
                     </div>
-                    <div class="package-savings" style="color: #FFFFFF;">Oszczędzasz 180 zł (15%)</div>
+                    <div class="package-savings">Oszczędzasz 180 zł (15%)</div>
                 </div>
             </div>
         </div>
@@ -722,7 +714,7 @@
 
     <!-- FAQ Section -->
     <section id="faq" class="py-120">
-        <div class="container" style="max-width: 900px;">
+        <div class="container container--medium">
             <div class="text-center mb-80">
                 <h2 class="section-title">Najczęściej zadawane pytania</h2>
                 <p class="mt-24 section-subtitle">
@@ -866,7 +858,7 @@
 
     <!-- Contact Form Section -->
     <section id="contact" class="py-120">
-        <div class="container" style="max-width: 800px;">
+        <div class="container container--narrow">
             <div class="text-center mb-60">
                 <h2 class="section-title">Umów bezpłatną konsultację</h2>
                 <p class="mt-24 section-subtitle">
@@ -921,22 +913,21 @@
                         placeholder="Opisz swoją sytuację lub zadaj pytanie..."></textarea>
                 </div>
 
-                <div class="form-group" style="margin-top: 16px;">
-                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 14px; font-family: 'Source Sans Pro', sans-serif; color: #4A5568; line-height: 1.5;">
-                        <input type="checkbox" id="rodoConsent" required style="margin-top: 4px; min-width: 18px; min-height: 18px; accent-color: #FFCC00;">
+                <div class="form-group form-group--consent">
+                    <label class="form-consent-label">
+                        <input type="checkbox" id="rodoConsent" required class="form-consent-checkbox">
                         <span>Wyrażam wyraźną zgodę na przetwarzanie moich danych osobowych, w tym danych
                         dotyczących zdrowia, w celu odpowiedzi na moje zapytanie, zgodnie z
-                        <a href="polityka-prywatnosci.html" target="_blank" style="color: #4ECDC4; text-decoration: underline;">Polityką Prywatności</a>. *</span>
+                        <a href="polityka-prywatnosci.html" target="_blank" class="link--accent-underline">Polityką Prywatności</a>. *</span>
                     </label>
                 </div>
 
-                <button type="submit" class="cta-button" style="width: 100%; font-size: 18px; padding: 18px;">
+                <button type="submit" class="cta-button form-submit--full">
                     Wyślij formularz
                 </button>
 
-                <p
-                    style="font-size: 14px; color: #718096; text-align: center; margin-top: 20px; font-family: 'Source Sans Pro', sans-serif;">
-                    Odpowiemy w ciągu 24 godzin. Dane przetwarzane zgodnie z <a href="polityka-prywatnosci.html" style="color: #4ECDC4;">Polityką Prywatności</a>.
+                <p class="form-footer-note">
+                    Odpowiemy w ciągu 24 godzin. Dane przetwarzane zgodnie z <a href="polityka-prywatnosci.html" class="link--accent">Polityką Prywatności</a>.
                 </p>
             </form>
         </div>
@@ -955,7 +946,7 @@
                 <div class="contact-info-card fade-in">
                     <div class="icon">📧</div>
                     <h4>Kontakt</h4>
-                    <p><a href="mailto:biuro@szlak-rozwoju.pl" style="color: inherit; text-decoration: none;">biuro@szlak-rozwoju.pl</a></p>
+                    <p><a href="mailto:biuro@szlak-rozwoju.pl" class="link--inherit">biuro@szlak-rozwoju.pl</a></p>
                 </div>
 
                 <div class="contact-info-card fade-in">
@@ -980,17 +971,17 @@
         <div class="container">
             <img src="logo.png" alt="Logo Szlak Rozwoju — Socjoterapia Żywiec" id="footerLogo" width="200" height="93" loading="lazy">
             <h3>Szlak Rozwoju</h3>
-            <p style="max-width: 600px; margin: 0 auto 40px;">
+            <p class="footer-description">
                 Gabinet Socjoterapii i Rozwoju Osobistego<br>
                 ul. Wiklinowa 7, 34-300 Żywiec, woj. śląskie
             </p>
 
             <div class="footer-divider">
                 <p>© 2025 Szlak Rozwoju. Wszystkie prawa zastrzeżone.</p>
-                <p style="margin-top: 8px;">Dorota Kluz - Wieloletnie doświadczenie w socjoterapii dzieci, młodzieży i
+                <p class="footer-meta">Dorota Kluz - Wieloletnie doświadczenie w socjoterapii dzieci, młodzieży i
                     dorosłych</p>
-                <p style="margin-top: 8px;">
-                    <a href="polityka-prywatnosci.html" style="color: #4ECDC4; text-decoration: underline;">Polityka Prywatności</a>
+                <p class="footer-meta">
+                    <a href="polityka-prywatnosci.html" class="link--accent-underline">Polityka Prywatności</a>
                 </p>
             </div>
         </div>

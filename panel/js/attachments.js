@@ -46,7 +46,7 @@ var Attachments = {
         if (!lightbox || !img) return;
 
         img.src = src;
-        lightbox.style.display = 'flex';
+        lightbox.classList.remove('u-hidden');
         document.body.style.overflow = 'hidden';
     },
 
@@ -55,7 +55,7 @@ var Attachments = {
         var img = document.getElementById('lightboxImg');
         if (!lightbox) return;
 
-        lightbox.style.display = 'none';
+        lightbox.classList.add('u-hidden');
         if (img) img.src = '';
         document.body.style.overflow = '';
     },

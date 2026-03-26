@@ -8,67 +8,6 @@
     <title>Panel Klienta — Szlak Rozwoju</title>
     <meta name="description" content="Panel klienta Szlak Rozwoju — historia terapii, notatki, dokumenty i grafik wizyt.">
     <link rel="icon" type="image/png" href="logo.png">
-    <style>
-        /* Self-hosted Google Fonts (RODO: eliminuje wysyłanie IP do Google) */
-        @font-face { font-family: 'Poppins'; font-style: normal; font-weight: 300; font-display: swap;
-            src: url('fonts/poppins-300-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-        @font-face { font-family: 'Poppins'; font-style: normal; font-weight: 300; font-display: swap;
-            src: url('fonts/poppins-300-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-        @font-face { font-family: 'Poppins'; font-style: normal; font-weight: 400; font-display: swap;
-            src: url('fonts/poppins-400-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-        @font-face { font-family: 'Poppins'; font-style: normal; font-weight: 400; font-display: swap;
-            src: url('fonts/poppins-400-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-        @font-face { font-family: 'Poppins'; font-style: normal; font-weight: 600; font-display: swap;
-            src: url('fonts/poppins-600-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-        @font-face { font-family: 'Poppins'; font-style: normal; font-weight: 600; font-display: swap;
-            src: url('fonts/poppins-600-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-        @font-face { font-family: 'Poppins'; font-style: normal; font-weight: 700; font-display: swap;
-            src: url('fonts/poppins-700-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-        @font-face { font-family: 'Poppins'; font-style: normal; font-weight: 700; font-display: swap;
-            src: url('fonts/poppins-700-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-        @font-face { font-family: 'Poppins'; font-style: normal; font-weight: 800; font-display: swap;
-            src: url('fonts/poppins-800-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-        @font-face { font-family: 'Poppins'; font-style: normal; font-weight: 800; font-display: swap;
-            src: url('fonts/poppins-800-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-        @font-face { font-family: 'Source Sans Pro'; font-style: normal; font-weight: 300; font-display: swap;
-            src: url('fonts/source-sans-pro-300-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-        @font-face { font-family: 'Source Sans Pro'; font-style: normal; font-weight: 300; font-display: swap;
-            src: url('fonts/source-sans-pro-300-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-        @font-face { font-family: 'Source Sans Pro'; font-style: normal; font-weight: 400; font-display: swap;
-            src: url('fonts/source-sans-pro-400-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-        @font-face { font-family: 'Source Sans Pro'; font-style: normal; font-weight: 400; font-display: swap;
-            src: url('fonts/source-sans-pro-400-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-        @font-face { font-family: 'Source Sans Pro'; font-style: normal; font-weight: 600; font-display: swap;
-            src: url('fonts/source-sans-pro-600-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-        @font-face { font-family: 'Source Sans Pro'; font-style: normal; font-weight: 600; font-display: swap;
-            src: url('fonts/source-sans-pro-600-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-        /* Skip-to-content (accessibility) */
-        .skip-to-content {
-            position: absolute;
-            left: -9999px;
-            top: auto;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-            z-index: 10000;
-        }
-        .skip-to-content:focus {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            width: auto;
-            height: auto;
-            padding: 12px 24px;
-            background: #FFCC00;
-            color: #1a1a2e;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 10000;
-        }
-    </style>
     <link rel="stylesheet" href="panel/css/panel.css">
 </head>
 
@@ -89,13 +28,13 @@
             </a>
 
             <!-- Widoczne gdy niezalogowany -->
-            <div id="navGuest" class="nav-links" style="display: none;">
+            <div id="navGuest" class="nav-links u-hidden">
                 <a href="index.html">Strona główna</a>
                 <a href="polityka-prywatnosci.html">Polityka Prywatności</a>
             </div>
 
             <!-- Widoczne gdy zalogowany -->
-            <div id="navAuth" class="nav-links" style="display: none;">
+            <div id="navAuth" class="nav-links u-hidden">
                 <a href="index.html">Strona główna</a>
                 <div class="nav-user">
                     <span id="navUserName" class="nav-user-name"></span>
@@ -107,13 +46,13 @@
     </nav>
 
     <!-- Banner RODO -->
-    <div id="privacyBanner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#1A202C; color:#fff; padding:14px 24px; z-index:10000; font-family:var(--font-body); font-size:13px; line-height:1.5; box-shadow:0 -4px 20px rgba(0,0,0,0.15);">
-        <div style="max-width:1000px; margin:0 auto; display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-            <p style="flex:1; margin:0;">
+    <div id="privacyBanner" class="privacy-banner u-hidden">
+        <div class="privacy-banner__inner">
+            <p class="privacy-banner__text">
                 Panel klienta korzysta z usług Supabase (baza danych).
-                <a href="polityka-prywatnosci.html" style="color:#4ECDC4; text-decoration:underline;">Polityka Prywatności</a>
+                <a href="polityka-prywatnosci.html" class="link--accent-underline">Polityka Prywatności</a>
             </p>
-            <button id="privacyBannerClose" style="background:var(--color-gold); color:#1A202C; border:none; padding:8px 24px; border-radius:50px; font-weight:600; cursor:pointer;">Rozumiem</button>
+            <button id="privacyBannerClose" class="privacy-banner__btn">Rozumiem</button>
         </div>
     </div>
 
@@ -220,10 +159,10 @@
                             <label for="registerPassword">Hasło</label>
                             <input type="password" id="registerPassword" placeholder="Min. 8 znaków" required minlength="8" autocomplete="new-password" aria-describedby="registerAlert">
                         </div>
-                        <div class="form-group" style="margin-top: 8px;">
-                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 13px; color: var(--color-text-light); line-height: 1.5;">
-                                <input type="checkbox" id="registerConsent" required style="margin-top: 3px; min-width: 16px; min-height: 16px; accent-color: var(--color-gold);">
-                                <span>Akceptuję <a href="polityka-prywatnosci.html" target="_blank" style="color: var(--color-turquoise); text-decoration: underline;">Politykę Prywatności</a>
+                        <div class="form-group form-consent-group">
+                            <label class="form-consent-label">
+                                <input type="checkbox" id="registerConsent" required class="form-consent-checkbox">
+                                <span>Akceptuję <a href="polityka-prywatnosci.html" target="_blank" class="link--accent-underline">Politykę Prywatności</a>
                                 i wyrażam wyraźną zgodę na przetwarzanie moich danych osobowych, w tym danych
                                 dotyczących zdrowia, w celu prowadzenia konta w panelu klienta. *</span>
                             </label>
@@ -289,7 +228,7 @@
 
                 <div class="account-card">
                     <h3>Eksport danych</h3>
-                    <p style="color: var(--color-text-light); margin-bottom: 16px; font-size: 14px;">
+                    <p class="text-note">
                         Pobierz kopię swoich danych osobowych w formacie JSON (art. 20 RODO).
                         Eksport zawiera: profil, historię wizyt, notatki z sesji i listę załączników.
                     </p>
@@ -298,7 +237,7 @@
 
                 <div class="account-card account-card-danger">
                     <h3>Usuwanie konta</h3>
-                    <p style="color: var(--color-text-light); margin-bottom: 16px; font-size: 14px;">
+                    <p class="text-note">
                         Trwale usunięte zostaną: Twoje konto, profil, notatki z sesji, załączniki i historia wizyt.
                         Tej operacji nie można cofnąć.
                     </p>
@@ -316,7 +255,7 @@
 
             <div class="notes-layout">
                 <!-- Sidebar klientów (tylko terapeuta) -->
-                <aside id="clientsSidebar" class="clients-sidebar" style="display: none;">
+                <aside id="clientsSidebar" class="clients-sidebar u-hidden">
                     <h3>Klienci</h3>
                     <input type="text" id="clientSearch" class="client-search" placeholder="Szukaj klienta...">
                     <div id="clientsList" class="clients-list">
@@ -327,7 +266,7 @@
                 <!-- Panel główny z notatkami -->
                 <main class="notes-main">
                     <!-- Pasek akcji (terapeuta) -->
-                    <div id="notesActions" class="notes-actions" style="display: none;">
+                    <div id="notesActions" class="notes-actions u-hidden">
                         <span id="notesClientName" class="notes-client-name"></span>
                         <button id="addNoteBtn" class="btn-primary btn-sm">+ Dodaj notatkę</button>
                     </div>
@@ -338,7 +277,7 @@
                     </div>
 
                     <!-- Przycisk "Załaduj więcej" -->
-                    <div id="notesLoadMore" class="notes-load-more" style="display: none;">
+                    <div id="notesLoadMore" class="notes-load-more u-hidden">
                         <button id="loadMoreBtn" class="btn-secondary btn-sm">Załaduj więcej</button>
                     </div>
                 </main>
@@ -362,10 +301,10 @@
                 <div id="sessionInfo" class="session-info"></div>
             </div>
             <div id="sessionContainer" class="session-container"></div>
-            <div id="sessionActions" class="session-actions" style="display: none;">
+            <div id="sessionActions" class="session-actions u-hidden">
                 <a id="sessionExternalLink" href="#" target="_blank" rel="noopener"
                    class="btn-secondary btn-sm">Otwórz w nowej karcie</a>
-                <button id="sessionEndBtn" class="btn-primary btn-sm" style="width:auto;">Zakończ sesję</button>
+                <button id="sessionEndBtn" class="btn-primary btn-sm btn-auto-width">Zakończ sesję</button>
             </div>
         </div>
 
@@ -373,7 +312,7 @@
         <div id="view-schedule" class="view">
             <div class="schedule-header">
                 <a href="#/dashboard" class="back-link">&larr; Dashboard</a>
-                <h1 id="scheduleTitle">Grafik wizyt <span id="schedulePendingBadge" class="pending-badge" style="display:none;"></span></h1>
+                <h1 id="scheduleTitle">Grafik wizyt <span id="schedulePendingBadge" class="pending-badge u-hidden"></span></h1>
             </div>
 
             <!-- Nawigacja tygodnia -->
@@ -391,7 +330,7 @@
             </div>
 
             <!-- Nawigacja miesiąca (hidden by default) -->
-            <div class="schedule-nav schedule-month-nav" id="scheduleMonthNav" style="display:none;">
+            <div class="schedule-nav schedule-month-nav u-hidden" id="scheduleMonthNav">
                 <button id="scheduleMonthPrev" class="btn-icon-nav" title="Poprzedni miesiąc" aria-label="Poprzedni miesiąc">&lsaquo;</button>
                 <span id="scheduleMonthLabel" class="schedule-week-label"></span>
                 <button id="scheduleMonthNext" class="btn-icon-nav" title="Następny miesiąc" aria-label="Następny miesiąc">&rsaquo;</button>
@@ -399,24 +338,24 @@
             </div>
 
             <!-- Siatka miesięczna -->
-            <div id="scheduleMonthGrid" class="schedule-month-grid" style="display:none;"></div>
+            <div id="scheduleMonthGrid" class="schedule-month-grid u-hidden"></div>
 
             <!-- Desktop: siatka tygodniowa -->
             <div id="scheduleGrid" class="schedule-grid"></div>
 
             <!-- Pasek akcji terapeuty -->
-            <div id="scheduleActions" class="schedule-actions" style="display: none;">
+            <div id="scheduleActions" class="schedule-actions u-hidden">
                 <button id="addSlotBtn" class="btn-primary btn-sm schedule-action-btn">+ Dodaj termin</button>
                 <button id="copyWeekBtn" class="btn-secondary btn-sm schedule-action-btn">Kopiuj tydzień</button>
             </div>
 
             <!-- Przycisk propozycji terminu (klient) -->
-            <div id="clientRequestSection" style="display: none; text-align: center;">
+            <div id="clientRequestSection" class="client-request-section u-hidden">
                 <button id="requestAppointmentBtn" class="btn-request-appointment">Zaproponuj termin</button>
             </div>
 
             <!-- Moje wizyty (klient) -->
-            <div id="myAppointments" class="my-appointments" style="display: none;">
+            <div id="myAppointments" class="my-appointments u-hidden">
                 <h2>Moje wizyty</h2>
                 <div id="myAppointmentsList" class="my-appointments-list"></div>
             </div>
@@ -425,7 +364,7 @@
     </div>
 
     <!-- Booking dialog modal -->
-    <div id="bookingDialog" class="booking-dialog" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="bookingDialogTitle">
+    <div id="bookingDialog" class="booking-dialog u-hidden" role="dialog" aria-modal="true" aria-labelledby="bookingDialogTitle">
         <div class="booking-dialog-backdrop"></div>
         <div class="booking-dialog-content">
             <h3 id="bookingDialogTitle">Potwierdzenie rezerwacji</h3>
@@ -451,7 +390,7 @@
     </div>
 
     <!-- Request form modal (klient — propozycja terminu) -->
-    <div id="requestFormModal" class="booking-dialog" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="requestFormTitle">
+    <div id="requestFormModal" class="booking-dialog u-hidden" role="dialog" aria-modal="true" aria-labelledby="requestFormTitle">
         <div class="booking-dialog-backdrop"></div>
         <div class="booking-dialog-content slot-form-content">
             <h3 id="requestFormTitle">Zaproponuj termin</h3>
@@ -511,7 +450,7 @@
     </div>
 
     <!-- Accept request dialog (terapeuta) -->
-    <div id="acceptRequestDialog" class="booking-dialog" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="acceptRequestTitle">
+    <div id="acceptRequestDialog" class="booking-dialog u-hidden" role="dialog" aria-modal="true" aria-labelledby="acceptRequestTitle">
         <div class="booking-dialog-backdrop"></div>
         <div class="booking-dialog-content">
             <h3 id="acceptRequestTitle">Akceptacja propozycji</h3>
@@ -535,7 +474,7 @@
     </div>
 
     <!-- Slot form modal (terapeuta) -->
-    <div id="slotFormModal" class="booking-dialog" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="slotFormTitle">
+    <div id="slotFormModal" class="booking-dialog u-hidden" role="dialog" aria-modal="true" aria-labelledby="slotFormTitle">
         <div class="booking-dialog-backdrop"></div>
         <div class="booking-dialog-content slot-form-content">
             <h3 id="slotFormTitle">Nowy termin</h3>
@@ -560,7 +499,7 @@
                         <label for="slotStartTime">Od</label>
                         <input type="time" id="slotStartTime" value="09:00" required>
                     </div>
-                    <div class="form-group" id="slotRangeEndGroup" style="display: none;">
+                    <div class="form-group u-hidden" id="slotRangeEndGroup">
                         <label for="slotRangeEndTime">Do</label>
                         <input type="time" id="slotRangeEndTime" value="21:00">
                     </div>
@@ -574,7 +513,7 @@
                         <label class="duration-option"><input type="radio" name="slotDuration" value="90"> 90 min</label>
                     </div>
                 </div>
-                <div class="form-group" id="slotRangeDurationGroup" style="display: none;">
+                <div class="form-group u-hidden" id="slotRangeDurationGroup">
                     <label for="slotRangeDuration">Długość sesji</label>
                     <select id="slotRangeDuration" class="schedule-select">
                         <option value="30">30 min</option>
@@ -583,7 +522,7 @@
                         <option value="90">90 min</option>
                     </select>
                 </div>
-                <div class="form-group" id="slotBreakGroup" style="display: none;">
+                <div class="form-group u-hidden" id="slotBreakGroup">
                     <label for="slotBreakTime">Przerwa między sesjami</label>
                     <select id="slotBreakTime" class="schedule-select">
                         <option value="0">Brak</option>
@@ -628,7 +567,7 @@
                     <label class="repeat-label">
                         <input type="checkbox" id="slotRepeat"> Powtórz w przyszłych tygodniach
                     </label>
-                    <div id="slotRepeatWeeks" style="display: none; margin-top: 8px;">
+                    <div id="slotRepeatWeeks" class="slot-repeat-weeks u-hidden">
                         <label for="slotRepeatCount">Ile tygodni:</label>
                         <input type="number" id="slotRepeatCount" min="1" max="12" value="4" class="repeat-count-input">
                     </div>
@@ -642,7 +581,7 @@
     </div>
 
     <!-- Lightbox overlay -->
-    <div id="lightbox" class="lightbox" style="display: none;">
+    <div id="lightbox" class="lightbox u-hidden">
         <div class="lightbox-backdrop"></div>
         <div class="lightbox-content">
             <button class="lightbox-close">✕</button>

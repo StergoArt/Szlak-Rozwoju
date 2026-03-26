@@ -20,7 +20,7 @@
     // Ukryj loader niezaleznie od bledow
     var loader = document.getElementById('appLoader');
     if (loader) {
-        loader.style.display = 'none';
+        loader.classList.add('u-hidden');
     }
 
     // Uruchom moduly i router po sprawdzeniu sesji
@@ -34,12 +34,12 @@
     // Banner RODO (localStorage — pokazuje sie raz, potem znika na stale)
     if (!localStorage.getItem('rodo_banner_accepted')) {
         var banner = document.getElementById('privacyBanner');
-        if (banner) banner.style.display = 'block';
+        if (banner) banner.classList.remove('u-hidden');
     }
     var bannerCloseBtn = document.getElementById('privacyBannerClose');
     if (bannerCloseBtn) {
         bannerCloseBtn.addEventListener('click', function() {
-            document.getElementById('privacyBanner').style.display = 'none';
+            document.getElementById('privacyBanner').classList.add('u-hidden');
             localStorage.setItem('rodo_banner_accepted', '1');
         });
     }

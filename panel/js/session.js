@@ -37,7 +37,7 @@ var Session = {
         var title = document.getElementById('sessionTitle');
 
         if (container) { while (container.firstChild) container.removeChild(container.firstChild); }
-        if (actions) actions.style.display = 'none';
+        if (actions) actions.classList.add('u-hidden');
         if (info) info.textContent = 'Ładowanie...';
         if (title) title.textContent = 'Sesja online';
 
@@ -117,7 +117,7 @@ var Session = {
                         mobileHint.textContent = 'Na urządzeniu mobilnym sesja otwiera się w nowej karcie przeglądarki.';
                         container.appendChild(mobileHint);
                     }
-                    if (actions) actions.style.display = 'flex';
+                    if (actions) actions.classList.remove('u-hidden');
                     return;
                 }
 
@@ -127,7 +127,7 @@ var Session = {
                 }).catch(function (err) {
                     logError('Błąd ładowania Jitsi:', err);
                     if (info) info.textContent = 'Nie udało się załadować wideokonferencji. Użyj linku poniżej.';
-                    if (actions) actions.style.display = 'flex';
+                    if (actions) actions.classList.remove('u-hidden');
                 });
             })
             .catch(function (err) {
@@ -206,7 +206,7 @@ var Session = {
                 self.endSession();
             });
 
-            if (actions) actions.style.display = 'flex';
+            if (actions) actions.classList.remove('u-hidden');
 
             // Hint o tablicy / rysunkach
             if (info) {

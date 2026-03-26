@@ -1552,3 +1552,235 @@
 .toast-notification--error {
     background: #E53E3E;
 }
+
+/* ===== Migrated Inline Styles ===== */
+
+/* --- Privacy Banner (RODO) --- */
+.privacy-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1A202C;
+    color: #fff;
+    padding: 16px 24px;
+    z-index: 10000;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+}
+.privacy-banner__inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.privacy-banner__text {
+    flex: 1;
+    min-width: 200px;
+    margin: 0;
+}
+.privacy-banner__link {
+    color: #4ECDC4;
+    text-decoration: underline;
+}
+.privacy-banner__close {
+    background: #FFCC00;
+    color: #1A202C;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* --- Nav Link Active --- */
+.nav-link--active {
+    color: #4ECDC4;
+    font-weight: 600;
+}
+
+/* --- Hero Decorations --- */
+.hero-decoration--1 {
+    background: #FFCC00;
+    top: 10%;
+    left: 5%;
+}
+.hero-decoration--2 {
+    background: #4ECDC4;
+    bottom: 15%;
+    right: 10%;
+}
+.hero-decoration--3 {
+    background: #FF6B6B;
+    top: 40%;
+    right: 20%;
+}
+.hero-subtitle--highlight {
+    font-size: 1.15em;
+    font-weight: 600;
+    color: #4ECDC4;
+    margin-bottom: 8px;
+}
+
+/* --- Service Cards: data-color variants --- */
+.service-card[data-color="gold"] { --service-color: #FFCC00; }
+.service-card[data-color="turquoise"] { --service-color: #4ECDC4; }
+.service-card[data-color="coral"] { --service-color: #FF6B6B; }
+.service-card[data-color="purple"] { --service-color: #9B59B6; }
+
+/* Service icon gradients */
+.service-card[data-color="gold"] .service-icon { background: linear-gradient(135deg, #FFCC00, #FFB800); }
+.service-card[data-color="turquoise"] .service-icon { background: linear-gradient(135deg, #4ECDC4, #3BA99C); }
+.service-card[data-color="coral"] .service-icon { background: linear-gradient(135deg, #FF6B6B, #E74C3C); }
+.service-card[data-color="purple"] .service-icon { background: linear-gradient(135deg, #9B59B6, #8E44AD); }
+
+/* Service bullet color */
+.service-bullet { /* no additional base styles needed */ }
+.service-card[data-color="gold"] .service-bullet { color: #FFCC00; }
+.service-card[data-color="turquoise"] .service-bullet { color: #4ECDC4; }
+.service-card[data-color="coral"] .service-bullet { color: #FF6B6B; }
+.service-card[data-color="purple"] .service-bullet { color: #9B59B6; }
+
+/* Service price box gradients */
+.service-card[data-color="gold"] .service-price-box { background: linear-gradient(135deg, rgba(255,204,0,0.15), rgba(255,204,0,0.05)); }
+.service-card[data-color="turquoise"] .service-price-box { background: linear-gradient(135deg, rgba(78,205,196,0.15), rgba(78,205,196,0.05)); }
+.service-card[data-color="coral"] .service-price-box { background: linear-gradient(135deg, rgba(255,107,107,0.15), rgba(255,107,107,0.05)); }
+.service-card[data-color="purple"] .service-price-box { background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(155,89,182,0.05)); }
+
+/* Service toggle color */
+.service-card[data-color="gold"] .service-toggle { color: #FFCC00; }
+.service-card[data-color="turquoise"] .service-toggle { color: #4ECDC4; }
+.service-card[data-color="coral"] .service-toggle { color: #FF6B6B; }
+.service-card[data-color="purple"] .service-toggle { color: #9B59B6; }
+
+/* --- CTA Button Compact --- */
+.cta-button--compact {
+    padding: 12px 28px;
+    font-size: 16px;
+}
+
+/* --- Process Number: data-color variants --- */
+.process-number[data-color="gold"] { background: linear-gradient(135deg, #FFCC00, #FFB800); }
+.process-number[data-color="turquoise"] { background: linear-gradient(135deg, #4ECDC4, #3BA99C); }
+.process-number[data-color="coral"] { background: linear-gradient(135deg, #FF6B6B, #E74C3C); }
+.process-number[data-color="purple"] { background: linear-gradient(135deg, #9B59B6, #8E44AD); }
+
+/* --- Container Variants --- */
+.container--narrow {
+    max-width: 800px;
+}
+.container--medium {
+    max-width: 900px;
+}
+.container--wide {
+    max-width: 1000px;
+}
+
+/* --- Package Card Themes --- */
+.package-card--gold {
+    background: linear-gradient(135deg, #FFCC00 0%, #FFB800 100%);
+}
+.package-card--gold h4,
+.package-card--gold .package-price {
+    color: #1A202C;
+}
+.package-card--gold p,
+.package-card--gold .package-savings {
+    color: #2D3748;
+}
+
+.package-card--turquoise {
+    background: linear-gradient(135deg, #4ECDC4 0%, #3BA99C 100%);
+}
+.package-card--turquoise h4,
+.package-card--turquoise p,
+.package-card--turquoise .package-price,
+.package-card--turquoise .package-savings {
+    color: #FFFFFF;
+}
+
+.package-card--coral {
+    background: linear-gradient(135deg, #FF6B6B 0%, #E74C3C 100%);
+}
+.package-card--coral h4,
+.package-card--coral p,
+.package-card--coral .package-price,
+.package-card--coral .package-savings {
+    color: #FFFFFF;
+}
+
+.package-card--red {
+    background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+}
+.package-card--red h4,
+.package-card--red p,
+.package-card--red .package-price,
+.package-card--red .package-savings {
+    color: #FFFFFF;
+}
+
+/* --- Form Consent --- */
+.form-group--consent {
+    margin-top: 16px;
+}
+.form-consent-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    color: #4A5568;
+    line-height: 1.5;
+}
+.form-consent-checkbox {
+    margin-top: 4px;
+    min-width: 18px;
+    min-height: 18px;
+    accent-color: #FFCC00;
+}
+.form-submit--full {
+    width: 100%;
+    font-size: 18px;
+    padding: 18px;
+}
+.form-footer-note {
+    font-size: 14px;
+    color: #718096;
+    text-align: center;
+    margin-top: 20px;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* --- Links --- */
+.link--accent {
+    color: #4ECDC4;
+}
+.link--accent-underline {
+    color: #4ECDC4;
+    text-decoration: underline;
+}
+.link--inherit {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* --- Footer --- */
+.footer-description {
+    max-width: 600px;
+    margin: 0 auto 40px;
+}
+.footer-meta {
+    margin-top: 8px;
+}
+
+/* --- Utility --- */
+.u-hidden {
+    display: none !important;
+}

@@ -129,7 +129,7 @@ var Schedule = {
         if (repeatCb) {
             repeatCb.addEventListener('change', function () {
                 var weeksDiv = document.getElementById('slotRepeatWeeks');
-                if (weeksDiv) weeksDiv.style.display = repeatCb.checked ? 'block' : 'none';
+                if (weeksDiv) repeatCb.checked ? weeksDiv.classList.remove('u-hidden') : weeksDiv.classList.add('u-hidden');
             });
         }
 
@@ -202,7 +202,7 @@ var Schedule = {
                     if (radios[i].checked) { sessionMode = radios[i].value; break; }
                 }
                 var dialog = document.getElementById('acceptRequestDialog');
-                if (dialog) dialog.style.display = 'none';
+                if (dialog) dialog.classList.add('u-hidden');
 
                 // Reset dialog title
                 var titleEl = document.getElementById('acceptRequestTitle');
@@ -233,7 +233,7 @@ var Schedule = {
         if (acceptCancelBtn) {
             acceptCancelBtn.addEventListener('click', function () {
                 var dialog = document.getElementById('acceptRequestDialog');
-                if (dialog) dialog.style.display = 'none';
+                if (dialog) dialog.classList.add('u-hidden');
                 self._acceptRequestIsConfirm = false;
                 var titleEl = document.getElementById('acceptRequestTitle');
                 if (titleEl) titleEl.textContent = 'Akceptacja propozycji';
@@ -243,7 +243,7 @@ var Schedule = {
         var acceptDialog = document.getElementById('acceptRequestDialog');
         if (acceptDialog) {
             acceptDialog.querySelector('.booking-dialog-backdrop').addEventListener('click', function () {
-                acceptDialog.style.display = 'none';
+                acceptDialog.classList.add('u-hidden');
                 self._acceptRequestIsConfirm = false;
                 var titleEl = document.getElementById('acceptRequestTitle');
                 if (titleEl) titleEl.textContent = 'Akceptacja propozycji';
@@ -300,9 +300,9 @@ var Schedule = {
                 title.textContent = 'Grafik wizyt ';
                 if (badge) title.appendChild(badge);
             }
-            if (actions) actions.style.display = 'flex';
-            if (myAppts) myAppts.style.display = 'none';
-            if (clientRequest) clientRequest.style.display = 'none';
+            if (actions) actions.classList.remove('u-hidden');
+            if (myAppts) myAppts.classList.add('u-hidden');
+            if (clientRequest) clientRequest.classList.add('u-hidden');
             if (!this._clientsLoaded) {
                 this.loadClients();
             }
@@ -331,9 +331,9 @@ var Schedule = {
             window.addEventListener('hashchange', this._hashChangeCleanup);
         } else {
             if (title) title.textContent = 'Rezerwacja wizyty';
-            if (actions) actions.style.display = 'none';
-            if (myAppts) myAppts.style.display = 'block';
-            if (clientRequest) clientRequest.style.display = '';
+            if (actions) actions.classList.add('u-hidden');
+            if (myAppts) myAppts.classList.remove('u-hidden');
+            if (clientRequest) clientRequest.classList.remove('u-hidden');
             this.loadMyAppointments();
             this.loadTherapistId();
         }
@@ -471,7 +471,7 @@ var Schedule = {
                 var badge = document.getElementById('schedulePendingBadge');
                 if (badge) {
                     badge.textContent = count > 0 ? count : '';
-                    badge.style.display = count > 0 ? 'inline-flex' : 'none';
+                    count > 0 ? badge.classList.remove('u-hidden') : badge.classList.add('u-hidden');
                 }
             }).catch(function(err) {
                 logError('Błąd ładowania oczekujących:', err);
@@ -764,7 +764,7 @@ var Schedule = {
         var timeInput = document.getElementById('slotStartTime');
         var alertEl = document.getElementById('slotFormAlert');
 
-        if (alertEl) { alertEl.style.display = 'none'; alertEl.textContent = ''; }
+        if (alertEl) { alertEl.classList.add('u-hidden'); alertEl.textContent = ''; }
         if (dateInput) dateInput.value = prefillDate || this.formatDateForDB(new Date());
         if (timeInput) timeInput.value = '09:00';
         var radios = document.querySelectorAll('input[name="slotDuration"]');
@@ -799,7 +799,7 @@ var Schedule = {
         var repeatCb = document.getElementById('slotRepeat');
         if (repeatCb) repeatCb.checked = false;
         var weeksDiv = document.getElementById('slotRepeatWeeks');
-        if (weeksDiv) weeksDiv.style.display = 'none';
+        if (weeksDiv) weeksDiv.classList.add('u-hidden');
         var countInput = document.getElementById('slotRepeatCount');
         if (countInput) countInput.value = '4';
 
@@ -810,7 +810,7 @@ var Schedule = {
         }
         this.toggleSlotMode('single');
 
-        modal.style.display = 'flex';
+        modal.classList.remove('u-hidden');
     },
 
     toggleSlotMode: function (mode) {
@@ -820,21 +820,21 @@ var Schedule = {
         var breakGroup = document.getElementById('slotBreakGroup');
 
         if (mode === 'range') {
-            if (rangeEndGroup) rangeEndGroup.style.display = '';
-            if (durationGroup) durationGroup.style.display = 'none';
-            if (rangeDurationGroup) rangeDurationGroup.style.display = '';
-            if (breakGroup) breakGroup.style.display = '';
+            if (rangeEndGroup) rangeEndGroup.classList.remove('u-hidden');
+            if (durationGroup) durationGroup.classList.add('u-hidden');
+            if (rangeDurationGroup) rangeDurationGroup.classList.remove('u-hidden');
+            if (breakGroup) breakGroup.classList.remove('u-hidden');
         } else {
-            if (rangeEndGroup) rangeEndGroup.style.display = 'none';
-            if (durationGroup) durationGroup.style.display = '';
-            if (rangeDurationGroup) rangeDurationGroup.style.display = 'none';
-            if (breakGroup) breakGroup.style.display = 'none';
+            if (rangeEndGroup) rangeEndGroup.classList.add('u-hidden');
+            if (durationGroup) durationGroup.classList.remove('u-hidden');
+            if (rangeDurationGroup) rangeDurationGroup.classList.add('u-hidden');
+            if (breakGroup) breakGroup.classList.add('u-hidden');
         }
     },
 
     hideSlotForm: function () {
         var modal = document.getElementById('slotFormModal');
-        if (modal) modal.style.display = 'none';
+        if (modal) modal.classList.add('u-hidden');
     },
 
     saveSlot: function () {
@@ -1011,7 +1011,7 @@ var Schedule = {
         var alertEl = document.getElementById('slotFormAlert');
         if (alertEl) {
             alertEl.textContent = msg;
-            alertEl.style.display = 'block';
+            alertEl.classList.remove('u-hidden');
             alertEl.classList.add('visible');
         }
     },
@@ -1065,7 +1065,7 @@ var Schedule = {
         }
 
         var dialog = document.getElementById('acceptRequestDialog');
-        if (dialog) dialog.style.display = '';
+        if (dialog) dialog.classList.remove('u-hidden');
     },
 
     cancelAppointment: function (id) {
@@ -1173,9 +1173,9 @@ var Schedule = {
         // Reset do stanu rezerwacji
         var h3 = document.getElementById('bookingDialogTitle');
         if (h3) h3.textContent = 'Potwierdzenie rezerwacji';
-        if (confirmBtn) { confirmBtn.style.display = ''; confirmBtn.textContent = 'Zarezerwuj'; }
+        if (confirmBtn) { confirmBtn.classList.remove('u-hidden'); confirmBtn.textContent = 'Zarezerwuj'; }
         if (cancelBtnEl) cancelBtnEl.textContent = 'Anuluj';
-        if (serviceSelect) serviceSelect.parentNode.style.display = '';
+        if (serviceSelect) serviceSelect.parentNode.classList.remove('u-hidden');
 
         if (details) {
             this.clearElement(details);
@@ -1195,12 +1195,12 @@ var Schedule = {
         }
 
         if (serviceSelect) serviceSelect.value = apt.service_type || '';
-        if (dialog) dialog.style.display = 'flex';
+        if (dialog) dialog.classList.remove('u-hidden');
     },
 
     hideBookingDialog: function () {
         var dialog = document.getElementById('bookingDialog');
-        if (dialog) dialog.style.display = 'none';
+        if (dialog) dialog.classList.add('u-hidden');
         this._bookingAppointmentId = null;
     },
 
@@ -1271,11 +1271,11 @@ var Schedule = {
             details.textContent = message;
             details.style.background = '#FFF5F5';
         }
-        if (confirmBtn) confirmBtn.style.display = 'none';
+        if (confirmBtn) confirmBtn.classList.add('u-hidden');
         if (cancelBtnEl) cancelBtnEl.textContent = 'Zamknij';
-        if (serviceSelect) serviceSelect.parentNode.style.display = 'none';
+        if (serviceSelect) serviceSelect.parentNode.classList.add('u-hidden');
 
-        dialog.style.display = 'flex';
+        dialog.classList.remove('u-hidden');
     },
 
     cancelMyBooking: function (id) {
@@ -1505,7 +1505,7 @@ var Schedule = {
         var timeInput = document.getElementById('requestTime');
         var alertEl = document.getElementById('requestFormAlert');
 
-        if (alertEl) { alertEl.style.display = 'none'; alertEl.textContent = ''; }
+        if (alertEl) { alertEl.classList.add('u-hidden'); alertEl.textContent = ''; }
         if (dateInput) dateInput.value = this.formatDateForDB(new Date());
         if (timeInput) timeInput.value = '10:00';
         var radios = document.querySelectorAll('input[name="requestDuration"]');
@@ -1517,19 +1517,19 @@ var Schedule = {
         var notesTextarea = document.getElementById('requestNotes');
         if (notesTextarea) notesTextarea.value = '';
 
-        modal.style.display = 'flex';
+        modal.classList.remove('u-hidden');
     },
 
     hideRequestForm: function () {
         var modal = document.getElementById('requestFormModal');
-        if (modal) modal.style.display = 'none';
+        if (modal) modal.classList.add('u-hidden');
     },
 
     showRequestAlert: function (msg) {
         var alertEl = document.getElementById('requestFormAlert');
         if (alertEl) {
             alertEl.textContent = msg;
-            alertEl.style.display = 'block';
+            alertEl.classList.remove('u-hidden');
             alertEl.classList.add('visible');
         }
     },
@@ -1678,7 +1678,7 @@ var Schedule = {
         }
 
         var dialog = document.getElementById('acceptRequestDialog');
-        if (dialog) dialog.style.display = '';
+        if (dialog) dialog.classList.remove('u-hidden');
     },
 
     doAcceptRequest: function (id, sessionMode) {
@@ -1819,18 +1819,18 @@ var Schedule = {
         var mobileNav = document.querySelector('.schedule-day-view-nav');
 
         if (mode === 'month') {
-            if (weekNav) weekNav.style.display = 'none';
-            if (monthNav) monthNav.style.display = '';
-            if (weekGrid) weekGrid.style.display = 'none';
-            if (monthGrid) monthGrid.style.display = '';
-            if (mobileNav) mobileNav.style.display = 'none';
+            if (weekNav) weekNav.classList.add('u-hidden');
+            if (monthNav) monthNav.classList.remove('u-hidden');
+            if (weekGrid) weekGrid.classList.add('u-hidden');
+            if (monthGrid) monthGrid.classList.remove('u-hidden');
+            if (mobileNav) mobileNav.classList.add('u-hidden');
             this.goToMonth(this.monthOffset);
         } else {
-            if (weekNav) weekNav.style.display = '';
-            if (monthNav) monthNav.style.display = 'none';
-            if (weekGrid) weekGrid.style.display = '';
-            if (monthGrid) monthGrid.style.display = 'none';
-            if (mobileNav && this.isMobile()) mobileNav.style.display = '';
+            if (weekNav) weekNav.classList.remove('u-hidden');
+            if (monthNav) monthNav.classList.add('u-hidden');
+            if (weekGrid) weekGrid.classList.remove('u-hidden');
+            if (monthGrid) monthGrid.classList.add('u-hidden');
+            if (mobileNav && this.isMobile()) mobileNav.classList.remove('u-hidden');
             this.goToWeek(this.weekOffset);
         }
     },
