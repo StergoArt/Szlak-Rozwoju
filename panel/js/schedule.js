@@ -1490,7 +1490,11 @@ var Schedule = {
     },
 
     generateMeetingUrl: function (appointmentId) {
-        return 'https://meet.jit.si/szlak-rozwoju-' + appointmentId;
+        // CSPRNG — kryptograficznie bezpieczny suffix (Web Crypto API, Art. 9 RODO)
+        var arr = new Uint8Array(4);
+        window.crypto.getRandomValues(arr);
+        var suffix = Array.from(arr, function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+        return 'https://meet.jit.si/szlak-rozwoju-' + appointmentId + '-' + suffix;
     },
 
     // ===== Propozycje terminów (klient) =====

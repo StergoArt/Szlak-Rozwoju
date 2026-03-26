@@ -748,7 +748,7 @@ body {
     border: 2px solid var(--color-border);
     border-radius: var(--radius-sm);
     font-family: var(--font-body);
-    font-size: 15px;
+    font-size: 16px; /* >= 16px zapobiega auto-zoom na iOS Safari */
     color: var(--color-text);
     outline: none;
     resize: vertical;
@@ -966,7 +966,7 @@ body {
     border: 2px solid var(--color-border);
     border-radius: var(--radius-sm);
     font-family: var(--font-body);
-    font-size: 15px;
+    font-size: 16px; /* >= 16px zapobiega auto-zoom na iOS Safari */
     color: var(--color-text);
     background: var(--color-white);
     margin-bottom: 16px;
@@ -1458,7 +1458,7 @@ body {
     border: 2px solid var(--color-border);
     border-radius: var(--radius-sm);
     font-family: var(--font-body);
-    font-size: 15px;
+    font-size: 16px; /* >= 16px zapobiega auto-zoom na iOS Safari */
     color: var(--color-text);
     background: var(--color-white);
     outline: none;
@@ -1490,7 +1490,7 @@ body {
     border: 2px solid var(--color-border);
     border-radius: var(--radius-sm);
     font-family: var(--font-body);
-    font-size: 15px;
+    font-size: 16px; /* >= 16px zapobiega auto-zoom na iOS Safari */
     color: var(--color-text);
     outline: none;
     transition: border-color var(--transition);

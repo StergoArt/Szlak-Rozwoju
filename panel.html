@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- [FIX #4] Metatagi mobilne — zapobiega zoomowaniu formularzy na iOS -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>Panel Klienta — Szlak Rozwoju</title>
@@ -651,11 +650,10 @@
         </div>
     </div>
 
-    <!-- Supabase JS z CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.99.3/dist/umd/supabase.min.js"
-            integrity="sha384-4bKASEcnXfYfA/rrhF9qD3mYowkb5k4Xbzbrf3ccqgZrplKUrwnA2Q/L5xcdZFAp"
-            crossorigin="anonymous"></script>
-    <!-- Moduły panelu -->
+    <!-- Supabase JS (vendor local — SRI zachowane, plik się nie zmienia) -->
+    <script src="js/vendor/supabase-2.99.3.min.js"
+            integrity="sha384-4bKASEcnXfYfA/rrhF9qD3mYowkb5k4Xbzbrf3ccqgZrplKUrwnA2Q/L5xcdZFAp"></script>
+    <!-- Moduły panelu (bez SRI — pliki projektowe zmieniają się bez CI/CD) -->
     <script src="panel/js/supabase-config.js"></script>
     <script src="panel/js/router.js"></script>
     <script src="panel/js/auth.js"></script>
@@ -665,55 +663,7 @@
     <script src="panel/js/session.js"></script>
     <script src="panel/js/documents.js"></script>
     <script src="panel/js/account.js"></script>
-
-    <script>
-        // Inicjalizacja aplikacji
-        (async function () {
-            try {
-                Auth.init();
-
-                // Sprawdź istniejącą sesję
-                var result = await supabase.auth.getSession();
-                var session = result.data.session;
-
-                if (session) {
-                    Auth.currentUser = session.user;
-                    await Auth.loadProfile();
-                    Auth.updateNavUI();
-                    Auth.renderDashboard();
-                }
-            } catch (err) {
-                console.error('Błąd inicjalizacji panelu:', err);
-            }
-
-            // Ukryj loader niezależnie od błędów
-            var loader = document.getElementById('appLoader');
-            if (loader) {
-                loader.style.display = 'none';
-            }
-
-            // Uruchom moduły i router po sprawdzeniu sesji
-            Notes.init();
-            Schedule.init();
-            Session.init();
-            Documents.init();
-            Account.init();
-            Router.init();
-
-            // Banner RODO (localStorage — pokazuje się raz, potem znika na stałe)
-            if (!localStorage.getItem('rodo_banner_accepted')) {
-                var banner = document.getElementById('privacyBanner');
-                if (banner) banner.style.display = 'block';
-            }
-            var bannerCloseBtn = document.getElementById('privacyBannerClose');
-            if (bannerCloseBtn) {
-                bannerCloseBtn.addEventListener('click', function() {
-                    document.getElementById('privacyBanner').style.display = 'none';
-                    localStorage.setItem('rodo_banner_accepted', '1');
-                });
-            }
-        })();
-    </script>
+    <script src="panel/js/init.js"></script>
 </body>
 
 </html>

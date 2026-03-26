@@ -1,0 +1,35 @@
+# .deployignore — pliki/foldery NIGDY nie wgrywane na serwer produkcyjny
+# Uzycie: rsync -avz --exclude-from='.deployignore' ./ user@seohost:/public_html/
+# Lub: FileZilla → Ustawienia → Transfery → Filtry plikow → filtr "Production Deploy"
+
+# Repozytorium i konfiguracja
+.git/
+.gitignore
+.deployignore
+.claude/
+
+# Dokumentacja i plany
+*.md
+docs/
+
+# Migracje i baza danych
+*.sql
+supabase/
+
+# Pliki srodowiskowe i sekrety
+.env*
+*.key
+*.pem
+
+# Pliki tymczasowe i backupy
+*.bak
+*.backup
+*.swp
+*.swo
+*.orig
+*.log
+
+# Zależnosci
+node_modules/
+
+# UWAGA: js/vendor/ jest DOZWOLONY — NIE dodawaj do listy wykluczen!
