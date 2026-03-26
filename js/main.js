@@ -223,7 +223,7 @@ footerLogo.onerror = function () {
             ]
         },
         booking: {
-            message: '📅 **Jak się zapisać?**\n\nNajprościej przez **formularz kontaktowy** na naszej stronie — odpowiadamy w ciągu 24h.\n\nMożesz też:\n📞 Zadzwonić\n📧 Napisać e-mail\n\n🕐 **Godziny pracy:**\nPoniedziałek–Piątek: 8:00–18:00\nSobota: po uzgodnieniu',
+            message: '📅 **Jak się zapisać?**\n\nNajprościej przez **formularz kontaktowy** na naszej stronie — odpowiadamy w ciągu 24h.\n\nMożesz też:\n📧 Napisać e-mail: biuro@szlak-rozwoju.pl\n\n🕐 **Godziny pracy:**\nPoniedziałek–Piątek: 14:00–20:00\nSobota: 9:00–15:00',
             replies: [
                 { text: '📝 Przejdź do formularza', target: 'scrollToContact', cta: true },
                 { text: '🔄 Jak wygląda współpraca?', target: 'process' },
@@ -248,7 +248,7 @@ footerLogo.onerror = function () {
             ]
         },
         location: {
-            message: '📍 **Lokalizacja:**\n\nGabinet **Szlak Rozwoju** mieści się w **Żywcu**.\n\n🕐 **Godziny pracy:**\nPoniedziałek–Piątek: 8:00–18:00\nSobota: po uzgodnieniu\n\n💻 Dostępne są również **sesje online** — wygodna opcja dla osób spoza Żywca.',
+            message: '📍 **Lokalizacja:**\n\nGabinet **Szlak Rozwoju** mieści się w **Żywcu**.\n\n🕐 **Godziny pracy:**\nPoniedziałek–Piątek: 14:00–20:00\nSobota: 9:00–15:00\n\n💻 Dostępne są również **sesje online** — wygodna opcja dla osób spoza Żywca.',
             replies: [
                 { text: '💻 Sesje online', target: 'online' },
                 { text: '📅 Umów się', target: 'booking' },
@@ -475,7 +475,7 @@ footerLogo.onerror = function () {
         } else if (chatMode === 'collecting_name') {
             chatUserData.name = text;
             addUserMessage(text);
-            addBotMessage('Świetnie, ' + text + '! Podaj jeszcze **e-mail lub numer telefonu**, żebyśmy mogli się z Tobą skontaktować.\n\n_Podając dane, wyrażasz zgodę na ich przetwarzanie ([Polityka Prywatności](polityka-prywatnosci.html))._', function () {
+            addBotMessage('Świetnie, ' + text + '! Podaj jeszcze **adres e-mail**, żebyśmy mogli się z Tobą skontaktować.\n\n_Podając dane, wyrażasz zgodę na ich przetwarzanie ([Polityka Prywatności](polityka-prywatnosci.html))._', function () {
                 chatMode = 'collecting_contact';
                 chatInput.focus();
             });
