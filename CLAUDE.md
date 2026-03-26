@@ -8,10 +8,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-Projekt zawiera dwie niezalezne wersje strony:
+Projekt sklada sie z trzech stron HTML + panelu klienta:
 
-- **`szlak-rozwoju.html`** - Samodzielna strona HTML (all-in-one: HTML + CSS + JS inline). To jest glowny plik produkcyjny. Nie wymaga buildu ani serwera - otwierany bezposrednio w przegladarce. Uzywa Google Fonts (Poppins, Source Sans Pro) i Font Awesome z CDN.
-- **`szlak-rozwoju.jsx`** - Wersja React z framer-motion (komponent `SzlakRozwoju`). Nie jest podlaczony do zadnego projektu React - to standalone komponent do ewentualnej integracji.
+- **`index.html`** - Glowna strona publiczna (landing page z usługami, cennikiem, FAQ, formularzem kontaktowym, chatbotem)
+- **`panel.html`** - Panel klienta (SPA z autoryzacją Supabase: notatki, grafik wizyt, dokumenty, sesje)
+- **`polityka-prywatnosci.html`** - Polityka prywatności (RODO)
+- **`szlak-rozwoju.jsx`** - Wersja React z framer-motion (standalone komponent, nie uzywany w produkcji)
+
+### Struktura plikow
+
+```
+index.html              <- glowna strona publiczna
+panel.html              <- panel klienta (SPA)
+polityka-prywatnosci.html <- polityka prywatnosci
+css/main.css            <- style glownej strony
+css/privacy.css         <- style polityki prywatnosci
+panel/css/panel.css     <- style panelu klienta
+js/main.js              <- logika glownej strony (chat, formularz, FAQ, karty uslug)
+panel/js/               <- moduly panelu (auth, notes, schedule, session, attachments, documents, account, router, init)
+js/vendor/              <- lokalne biblioteki (supabase-2.99.3.min.js, emailjs-4.4.1.min.js)
+fonts/                  <- lokalne fonty woff2 (Poppins, Source Sans Pro) — RODO compliance
+.htaccess               <- CSP strict, HSTS, cache, GZIP, blokada plikow wrazliwych
+.deployignore           <- lista plikow wykluczonych z deploymentu
+```
 
 ## Key Files
 
@@ -24,14 +43,17 @@ Brak systemu budowania, package.json, testow. Aby pracowac ze strona:
 
 ```bash
 # Podglad HTML - otworz plik w przegladarce
-start szlak-rozwoju.html
+start index.html
 ```
 
 ## Conventions
 
 - Jezyk strony: polski
 - Kolorystyka: zloty (#FFCC00, #FFD93D), turkusowy (#4ECDC4), cieple tlo (#FFF9E6, #FFF4E0)
-- Czcionki: Poppins (naglowki), Source Sans Pro (tresc)
+- Czcionki: Poppins (naglowki), Source Sans Pro (tresc) — lokalne woff2, nie CDN
 - Strona jest w pelni responsywna (mobile-first z media queries)
-- Formularz kontaktowy jest front-end only (placeholder na backend/n8n)
-- CSS i JS sa osadzone bezposrednio w pliku HTML (brak zewnetrznych plikow CSS/JS)
+- Formularz kontaktowy zintegrowany z EmailJS (wysylka email)
+- CSS w zewnetrznych plikach (css/main.css, panel/css/panel.css, css/privacy.css)
+- JS w zewnetrznych plikach (js/main.js, panel/js/*.js)
+- CSP strict: style-src 'self' (brak unsafe-inline), font-src 'self'
+- Toggle show/hide w JS: classList.add/remove('u-hidden'), NIE element.style.display

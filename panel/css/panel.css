@@ -59,7 +59,7 @@
     z-index: 10000;
 }
 
-/* ===== Design Tokens (z głównej strony szlak-rozwoju.html) ===== */
+/* ===== Design Tokens (z głównej strony index.html) ===== */
 :root {
     --color-gold: #FFCC00;
     --color-gold-dark: #FFB800;
