@@ -10,39 +10,64 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // Service Card Toggle
-document.querySelectorAll('.service-card').forEach(card => {
-    card.addEventListener('click', function (e) {
-        if (e.target.classList.contains('cta-button') || e.target.closest('.cta-button')) {
-            return;
+function toggleServiceCard(card) {
+    var details = card.querySelector('.service-details');
+    var toggle = card.querySelector('.service-toggle');
+
+    document.querySelectorAll('.service-card').forEach(function (otherCard) {
+        if (otherCard !== card) {
+            otherCard.classList.remove('active');
+            otherCard.setAttribute('aria-expanded', 'false');
+            otherCard.querySelector('.service-details').classList.remove('active');
+            otherCard.querySelector('.service-toggle').classList.remove('u-hidden');
         }
+    });
 
-        const details = this.querySelector('.service-details');
-        const toggle = this.querySelector('.service-toggle');
+    card.classList.toggle('active');
+    details.classList.toggle('active');
+    var isExpanded = details.classList.contains('active');
+    card.setAttribute('aria-expanded', String(isExpanded));
+    isExpanded ? toggle.classList.add('u-hidden') : toggle.classList.remove('u-hidden');
+}
 
-        document.querySelectorAll('.service-card').forEach(otherCard => {
-            if (otherCard !== this) {
-                otherCard.classList.remove('active');
-                otherCard.querySelector('.service-details').classList.remove('active');
-                otherCard.querySelector('.service-toggle').classList.remove('u-hidden');
-            }
-        });
-
-        this.classList.toggle('active');
-        details.classList.toggle('active');
-        details.classList.contains('active') ? toggle.classList.add('u-hidden') : toggle.classList.remove('u-hidden');
+document.querySelectorAll('.service-card').forEach(function (card) {
+    card.addEventListener('click', function (e) {
+        if (e.target.classList.contains('cta-button') || e.target.closest('.cta-button')) return;
+        toggleServiceCard(this);
+    });
+    card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleServiceCard(this);
+        }
     });
 });
 
 // FAQ Toggle
-document.querySelectorAll('.faq-item').forEach(item => {
-    item.addEventListener('click', function () {
-        document.querySelectorAll('.faq-item').forEach(otherItem => {
-            if (otherItem !== this) {
-                otherItem.classList.remove('active');
+function toggleFaqItem(item) {
+    var question = item.querySelector('.faq-question');
+    document.querySelectorAll('.faq-item').forEach(function (otherItem) {
+        if (otherItem !== item) {
+            otherItem.classList.remove('active');
+            var otherQ = otherItem.querySelector('.faq-question');
+            if (otherQ) otherQ.setAttribute('aria-expanded', 'false');
+        }
+    });
+    item.classList.toggle('active');
+    if (question) question.setAttribute('aria-expanded', String(item.classList.contains('active')));
+}
+
+document.querySelectorAll('.faq-item').forEach(function (item) {
+    item.addEventListener('click', function () { toggleFaqItem(this); });
+    var question = item.querySelector('.faq-question');
+    if (question) {
+        question.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleFaqItem(item);
             }
         });
-        this.classList.toggle('active');
-    });
+    }
 });
 
 // Toast Notification

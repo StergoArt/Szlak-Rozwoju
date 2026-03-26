@@ -1553,6 +1553,14 @@
     background: #E53E3E;
 }
 
+/* ===== Focus-Visible (Accessibility) ===== */
+.service-card:focus-visible,
+.faq-question:focus-visible {
+    outline: 3px solid #4ECDC4;
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
 /* ===== Migrated Inline Styles ===== */
 
 /* --- Privacy Banner (RODO) --- */
