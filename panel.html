@@ -7,7 +7,8 @@
     <meta name="robots" content="noindex, nofollow">
     <title>Panel Klienta — Szlak Rozwoju</title>
     <meta name="description" content="Panel klienta Szlak Rozwoju — historia terapii, notatki, dokumenty i grafik wizyt.">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://krrabwmlzalibufwdlpv.supabase.co" crossorigin>
     <link rel="stylesheet" href="panel/css/panel.css">
 </head>
 
@@ -23,7 +24,10 @@
     <nav class="panel-nav">
         <div class="container">
             <a href="index.html" class="nav-brand">
-                <img src="logo.png" alt="Szlak Rozwoju">
+                <picture>
+                    <source srcset="logo.webp" type="image/webp">
+                    <img src="logo.png" alt="Szlak Rozwoju" width="200" height="93" fetchpriority="high" decoding="sync">
+                </picture>
                 <span>Panel Klienta</span>
             </a>
 
@@ -49,10 +53,11 @@
     <div id="privacyBanner" class="privacy-banner u-hidden">
         <div class="privacy-banner__inner">
             <p class="privacy-banner__text">
-                Panel klienta korzysta z usług Supabase (baza danych).
+                Panel klienta <strong>nie używa cookies śledzących</strong>. Korzystamy z Supabase (baza danych)
+                wyłącznie w celach technicznych.
                 <a href="polityka-prywatnosci.html" class="link--accent-underline">Polityka Prywatności</a>
             </p>
-            <button id="privacyBannerClose" class="privacy-banner__btn">Rozumiem</button>
+            <button id="privacyBannerClose" class="privacy-banner__btn">OK, zamknij</button>
         </div>
     </div>
 

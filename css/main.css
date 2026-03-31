@@ -284,7 +284,8 @@
             margin-bottom: 24px;
         }
 
-        .hero-card h3 {
+        .hero-card__title {
+            font-family: 'Poppins', sans-serif;
             font-size: 28px;
             font-weight: 700;
             color: #1A202C;
@@ -852,7 +853,8 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .about-card h3 {
+        .about-card__title {
+            font-family: 'Poppins', sans-serif;
             font-size: 32px;
             font-weight: 700;
             color: #FFFFFF;
@@ -1031,9 +1033,9 @@
             .hero { padding-top: 80px; min-height: auto; }
             .hero-card { padding: 40px; }
             .hero-card .icon { font-size: 48px; }
-            .hero-card h3 { font-size: 22px; }
+            .hero-card__title { font-size: 22px; }
             .about-avatar { width: 150px; height: 150px; font-size: 60px; }
-            .about-card h3 { font-size: 26px; }
+            .about-card__title { font-size: 26px; }
             .about-grid { gap: 40px; }
             .contact-info-grid { gap: 24px; }
             .packages-grid { gap: 20px; }
@@ -1082,7 +1084,7 @@
             .process-content p { font-size: 16px; }
             .process-step { gap: 16px; margin-bottom: 32px; }
             .about-card { padding: 28px; }
-            .about-card h3 { font-size: 24px; }
+            .about-card__title { font-size: 24px; }
             .about-avatar { width: 120px; height: 120px; font-size: 48px; }
             .mission-box { padding: 20px; }
             .mission-box h4 { font-size: 20px; }

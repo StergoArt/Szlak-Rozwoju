@@ -7,5 +7,9 @@ Thumbs.db
 Desktop.ini
 .DS_Store
 
+# Build output
+dist/
+node_modules/
+
 # Claude Code settings (local, not project-level)
 .claude/settings.local.json

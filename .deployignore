@@ -32,4 +32,8 @@ supabase/
 # Zależnosci
 node_modules/
 
+# Build i skrypty
+dist/
+scripts/
+
 # UWAGA: js/vendor/ jest DOZWOLONY — NIE dodawaj do listy wykluczen!

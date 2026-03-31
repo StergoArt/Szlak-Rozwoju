@@ -110,6 +110,13 @@ document.getElementById('contactForm').addEventListener('submit', function (e) {
     var msg = formData.get('message') || '';
     var formattedMessage = 'Usługa: ' + serviceType + '\nWiek uczestnika: ' + age + '\n\n' + msg;
 
+    if (typeof emailjs === 'undefined') {
+        showToast('Trwa ładowanie, spróbuj ponownie za moment.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        return;
+    }
+
     var form = this;
     emailjs.send('service_vqv8i1b', 'service_vqfs743', {
         user_name: formData.get('name'),
@@ -450,6 +457,7 @@ footerLogo.onerror = function () {
     function openChat() {
         chatWindow.classList.add('open');
         chatFab.classList.add('active');
+        chatFab.setAttribute('aria-expanded', 'true');
         chatBadge.classList.add('hidden');
         chatOpened = true;
 
@@ -466,6 +474,7 @@ footerLogo.onerror = function () {
     function closeChat() {
         chatWindow.classList.remove('open');
         chatFab.classList.remove('active');
+        chatFab.setAttribute('aria-expanded', 'false');
         document.body.classList.remove('chat-open');
     }
 
@@ -524,6 +533,13 @@ footerLogo.onerror = function () {
     }
 
     function sendChatEmail() {
+        if (typeof emailjs === 'undefined') {
+            addBotMessage('Trwa ładowanie komponentu komunikacyjnego — spróbuj ponownie za moment. 🔄', function () {
+                resetChatMode();
+                showReplies(chatFlows.welcome.replies);
+            });
+            return;
+        }
         addBotMessage('Wysyłam wiadomość... ⏳', function () {
             emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
                 message: chatUserData.message,

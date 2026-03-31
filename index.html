@@ -4,35 +4,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Socjoterapia Żywiec — Gabinet Szlak Rozwoju | TUS, Terapia Dzieci i Młodzieży</title>
+    <title>Socjoterapia Żywiec — Gabinet Szlak Rozwoju | TUS</title>
     <meta name="description"
-        content="Gabinet socjoterapii w Żywcu. Socjoterapia indywidualna i grupowa, TUS, zajęcia ruchowe i obozy rozwojowe dla dzieci (6-12 lat), młodzieży i dorosłych. Bezpłatna konsultacja. Dorota Kluz — socjoterapeutka z wieloletnim doświadczeniem.">
+        content="Gabinet socjoterapii w Żywcu. Socjoterapia indywidualna i grupowa, TUS dla dzieci, młodzieży i dorosłych. Umów bezpłatną konsultację. Dorota Kluz.">
     <link rel="canonical" href="https://szlak-rozwoju.pl/">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:locale" content="pl_PL">
-    <meta property="og:title" content="Socjoterapia Żywiec — Gabinet Szlak Rozwoju | TUS, Terapia Dzieci i Młodzieży">
-    <meta property="og:description" content="Gabinet socjoterapii w Żywcu. Socjoterapia indywidualna i grupowa, TUS, zajęcia ruchowe i obozy rozwojowe dla dzieci, młodzieży i dorosłych. Bezpłatna konsultacja.">
+    <meta property="og:title" content="Socjoterapia Żywiec — Gabinet Szlak Rozwoju | TUS">
+    <meta property="og:description" content="Gabinet socjoterapii w Żywcu. Socjoterapia indywidualna i grupowa, TUS dla dzieci, młodzieży i dorosłych. Umów bezpłatną konsultację. Dorota Kluz.">
     <meta property="og:url" content="https://szlak-rozwoju.pl/">
     <meta property="og:image" content="https://szlak-rozwoju.pl/logo.png">
     <meta property="og:site_name" content="Szlak Rozwoju">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Socjoterapia Żywiec — Gabinet Szlak Rozwoju">
-    <meta name="twitter:description" content="Gabinet socjoterapii w Żywcu. Socjoterapia indywidualna i grupowa, TUS, zajęcia ruchowe i obozy rozwojowe dla dzieci, młodzieży i dorosłych.">
+    <meta name="twitter:title" content="Socjoterapia Żywiec — Gabinet Szlak Rozwoju | TUS">
+    <meta name="twitter:description" content="Gabinet socjoterapii w Żywcu. Socjoterapia indywidualna i grupowa, TUS dla dzieci, młodzieży i dorosłych. Umów bezpłatną konsultację.">
     <meta name="twitter:image" content="https://szlak-rozwoju.pl/logo.png">
     <!-- Local SEO & mobile -->
     <meta name="theme-color" content="#FFCC00">
     <meta name="geo.region" content="PL-24">
     <meta name="geo.placename" content="Żywiec">
     <!-- Performance hints -->
+    <link rel="preconnect" href="https://api.emailjs.com" crossorigin>
     <link rel="preload" href="fonts/poppins-700-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/source-sans-pro-400-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="css/main.css">
     <script src="js/vendor/emailjs-4.4.1.min.js"
-            integrity="sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS"></script>
+            integrity="sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS"
+            defer></script>
     <!-- Structured Data: LocalBusiness + Person -->
     <script type="application/ld+json">
     {
@@ -76,6 +78,7 @@
                     }
                 ],
                 "priceRange": "90-160 PLN",
+                "taxID": "5531458734",
                 "currenciesAccepted": "PLN",
                 "areaServed": [
                     { "@type": "City", "name": "Żywiec" },
@@ -247,10 +250,11 @@
     <div id="privacyBanner" class="privacy-banner u-hidden">
         <div class="privacy-banner__inner">
             <p class="privacy-banner__text">
-                Ta strona korzysta z usług EmailJS (formularz kontaktowy) oraz Supabase (panel klienta).
+                Ta strona <strong>nie używa cookies śledzących</strong>. Korzystamy z EmailJS (formularz kontaktowy)
+                i Supabase (panel klienta) wyłącznie w celach technicznych.
                 Szczegóły w <a href="polityka-prywatnosci.html" class="privacy-banner__link">Polityce Prywatności</a>.
             </p>
-            <button id="privacyBannerClose" class="privacy-banner__close">Rozumiem</button>
+            <button id="privacyBannerClose" class="privacy-banner__close">OK, zamknij</button>
         </div>
     </div>
 
@@ -258,7 +262,10 @@
     <header>
     <nav aria-label="Główna nawigacja">
         <div class="container">
-            <img src="logo.png" alt="Szlak Rozwoju — Gabinet Socjoterapii w Żywcu" id="logo" width="200" height="93" fetchpriority="high">
+            <picture>
+                <source srcset="logo.webp" type="image/webp">
+                <img src="logo.png" alt="Szlak Rozwoju — Gabinet Socjoterapii w Żywcu" id="logo" width="200" height="93" fetchpriority="high" decoding="sync">
+            </picture>
             <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
                 <span></span><span></span><span></span>
             </button>
@@ -286,7 +293,7 @@
         <div class="container">
             <div class="hero-content">
                 <div class="fade-in">
-                    <h1>Szlak do <span class="highlight">pewności siebie</span> i lepszych relacji</h1>
+                    <h1>Socjoterapia Żywiec — <span class="highlight">pewność siebie</span> i lepsze relacje</h1>
                     <p class="hero-subtitle hero-subtitle--highlight">
                         Gabinet socjoterapii w Żywcu — terapia i TUS dla dzieci, młodzieży i dorosłych
                     </p>
@@ -306,7 +313,7 @@
 
                 <div class="hero-card fade-in">
                     <div class="icon">🌱</div>
-                    <h3>Wieloletnie doświadczenie</h3>
+                    <p class="hero-card__title">Wieloletnie doświadczenie</p>
                     <p>Socjoterapia dla dzieci, młodzieży i dorosłych. Umiejętności społeczne, emocje, relacje.</p>
                     <div class="hero-card-badge">🎯 TUS — Trening Umiejętności Społecznych</div>
                 </div>
@@ -320,7 +327,7 @@
             <div class="about-grid">
                 <div class="about-card fade-in">
                     <div class="about-avatar">👩‍⚕️</div>
-                    <h3>Dorota Kluz</h3>
+                    <p class="about-card__title">Dorota Kluz</p>
                     <p>Socjoterapeutka z wieloletnim doświadczeniem</p>
                 </div>
 
@@ -886,7 +893,7 @@
                     <div class="form-group">
                         <label for="phone">Telefon *</label>
                         <input type="tel" name="phone" id="phone" class="form-input" placeholder="+48 123 456 789" required
-                            pattern="[\+]?[0-9\s\-]{9,}" title="Np. +48 123 456 789">
+                            pattern="\+?[\s\-]*(\d[\s\-]*){9,15}" title="Minimum 9 cyfr, np. +48 123 456 789">
                     </div>
 
                     <div class="form-group">
@@ -970,15 +977,19 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <img src="logo.png" alt="Logo Szlak Rozwoju — Socjoterapia Żywiec" id="footerLogo" width="200" height="93" loading="lazy">
+            <picture>
+                <source srcset="logo.webp" type="image/webp">
+                <img src="logo.png" alt="Logo Szlak Rozwoju — Socjoterapia Żywiec" id="footerLogo" width="200" height="93" loading="lazy" decoding="async">
+            </picture>
             <h3>Szlak Rozwoju</h3>
             <p class="footer-description">
                 Gabinet Socjoterapii i Rozwoju Osobistego<br>
-                ul. Wiklinowa 7, 34-300 Żywiec, woj. śląskie
+                ul. Wiklinowa 7, 34-300 Żywiec, woj. śląskie<br>
+                NIP: 5531458734
             </p>
 
             <div class="footer-divider">
-                <p>© 2025 Szlak Rozwoju. Wszystkie prawa zastrzeżone.</p>
+                <p>© 2025–2026 Szlak Rozwoju. Wszystkie prawa zastrzeżone.</p>
                 <p class="footer-meta">Dorota Kluz - Wieloletnie doświadczenie w socjoterapii dzieci, młodzieży i
                     dorosłych</p>
                 <p class="footer-meta">
@@ -990,7 +1001,7 @@
 
     <!-- Chat Widget -->
     <div id="chatWidget">
-        <button id="chatFab" class="chat-fab" aria-label="Otwórz czat">
+        <button id="chatFab" class="chat-fab" aria-label="Otwórz czat" aria-controls="chatWindow" aria-expanded="false">
             <span class="chat-fab-icon">💬</span>
             <span class="chat-fab-close">✕</span>
             <span class="chat-fab-badge"></span>
