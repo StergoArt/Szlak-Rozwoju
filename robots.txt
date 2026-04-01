@@ -5,20 +5,40 @@ Disallow: /panel/
 Disallow: /supabase/
 Disallow: /docs/
 
-# Blokada AI scraperów (ochrona unikalnych treści terapeutycznych)
-User-agent: GPTBot
-Disallow: /
+# AI search — przepuszczamy boty wyszukiwarek AI (dają ruch + linki zwrotne)
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /panel.html
+Disallow: /panel/
+Disallow: /supabase/
+Disallow: /docs/
 
 User-agent: ChatGPT-User
+Allow: /
+Disallow: /panel.html
+Disallow: /panel/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /panel.html
+Disallow: /panel/
+Disallow: /supabase/
+Disallow: /docs/
+
+# Apple Intelligence / Siri — widoczność na iPhone
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /panel.html
+Disallow: /panel/
+
+# Blokada scraperów treningowych (nie dają ruchu)
+User-agent: GPTBot
 Disallow: /
 
 User-agent: CCBot
 Disallow: /
 
 User-agent: anthropic-ai
-Disallow: /
-
-User-agent: Applebot-Extended
 Disallow: /
 
 Sitemap: https://szlak-rozwoju.pl/sitemap.xml

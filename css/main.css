@@ -500,7 +500,7 @@
             border: 2px solid #F7FAFC;
         }
 
-        .process-content h4 {
+        .process-content h3 {
             font-size: 24px;
             font-weight: 700;
             color: #1A202C;
@@ -582,7 +582,7 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         }
 
-        .package-card h4 {
+        .package-card h3 {
             font-size: 24px;
             font-weight: 700;
             margin-bottom: 16px;
@@ -634,7 +634,7 @@
             align-items: center;
         }
 
-        .faq-question h4 {
+        .faq-question h3 {
             font-size: 20px;
             font-weight: 600;
             color: #1A202C;
@@ -693,7 +693,7 @@
             margin-bottom: 20px;
         }
 
-        .benefit-card h4 {
+        .benefit-card h3 {
             font-size: 22px;
             font-weight: 700;
             color: #1A202C;
@@ -776,7 +776,7 @@
             margin-bottom: 16px;
         }
 
-        .contact-info-card h4 {
+        .contact-info-card h3 {
             font-size: 20px;
             font-weight: 700;
             color: #1A202C;
@@ -875,7 +875,7 @@
             margin-top: 24px;
         }
 
-        .mission-box h4 {
+        .mission-box h3 {
             font-size: 24px;
             font-weight: 700;
             color: #1A202C;
@@ -1080,17 +1080,17 @@
             .packages-grid { gap: 16px; margin-top: 40px; }
             .process-number { width: 80px; height: 80px; font-size: 32px; }
             .process-content { padding: 20px; }
-            .process-content h4 { font-size: 20px; }
+            .process-content h3 { font-size: 20px; }
             .process-content p { font-size: 16px; }
             .process-step { gap: 16px; margin-bottom: 32px; }
             .about-card { padding: 28px; }
             .about-card__title { font-size: 24px; }
             .about-avatar { width: 120px; height: 120px; font-size: 48px; }
             .mission-box { padding: 20px; }
-            .mission-box h4 { font-size: 20px; }
+            .mission-box h3 { font-size: 20px; }
             .mission-box p { font-size: 16px; }
             .faq-question { padding: 16px 20px; }
-            .faq-question h4 { font-size: 17px; }
+            .faq-question h3 { font-size: 17px; }
             .faq-answer-content { padding: 0 20px 16px; font-size: 16px; }
             .path-decoration { display: none; }
             footer { padding: 40px 16px 20px; }
@@ -1696,7 +1696,7 @@
 .package-card--gold {
     background: linear-gradient(135deg, #FFCC00 0%, #FFB800 100%);
 }
-.package-card--gold h4,
+.package-card--gold h3,
 .package-card--gold .package-price {
     color: #1A202C;
 }
@@ -1708,7 +1708,7 @@
 .package-card--turquoise {
     background: linear-gradient(135deg, #4ECDC4 0%, #3BA99C 100%);
 }
-.package-card--turquoise h4,
+.package-card--turquoise h3,
 .package-card--turquoise p,
 .package-card--turquoise .package-price,
 .package-card--turquoise .package-savings {
@@ -1718,7 +1718,7 @@
 .package-card--coral {
     background: linear-gradient(135deg, #FF6B6B 0%, #E74C3C 100%);
 }
-.package-card--coral h4,
+.package-card--coral h3,
 .package-card--coral p,
 .package-card--coral .package-price,
 .package-card--coral .package-savings {
@@ -1728,7 +1728,7 @@
 .package-card--red {
     background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
 }
-.package-card--red h4,
+.package-card--red h3,
 .package-card--red p,
 .package-card--red .package-price,
 .package-card--red .package-savings {
