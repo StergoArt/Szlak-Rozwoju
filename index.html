@@ -9,6 +9,7 @@
         content="Gabinet socjoterapii w Żywcu. Socjoterapia indywidualna i grupowa, TUS dla dzieci, młodzieży i dorosłych. Umów bezpłatną konsultację. Dorota Kluz.">
     <link rel="canonical" href="https://szlak-rozwoju.pl/">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="author" content="Dorota Kluz — Szlak Rozwoju">
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:locale" content="pl_PL">
@@ -27,10 +28,12 @@
     <meta name="geo.region" content="PL-24">
     <meta name="geo.placename" content="Żywiec">
     <!-- Performance hints -->
+    <link rel="dns-prefetch" href="https://api.emailjs.com">
     <link rel="preconnect" href="https://api.emailjs.com" crossorigin>
     <link rel="preload" href="fonts/poppins-700-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/source-sans-pro-400-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
     <link rel="stylesheet" href="css/main.css">
     <script src="js/vendor/emailjs-4.4.1.min.js"
             integrity="sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS"
@@ -167,7 +170,8 @@
                     "Terapia grupowa",
                     "Rozwój osobisty dzieci i młodzieży"
                 ],
-                "url": "https://szlak-rozwoju.pl/"
+                "url": "https://szlak-rozwoju.pl/",
+                "image": "https://szlak-rozwoju.pl/dorota-kluz.png"
             }
         ]
     }
@@ -326,7 +330,15 @@
         <div class="container">
             <div class="about-grid">
                 <div class="about-card fade-in">
-                    <div class="about-avatar">👩‍⚕️</div>
+                    <div class="about-avatar">
+                        <picture>
+                            <source srcset="dorota-kluz.webp" type="image/webp">
+                            <img src="dorota-kluz.png"
+                                 alt="Dorota Kluz — socjoterapeutka, właścicielka gabinetu Szlak Rozwoju w Żywcu"
+                                 width="400" height="400"
+                                 loading="lazy" decoding="async">
+                        </picture>
+                    </div>
                     <p class="about-card__title">Dorota Kluz</p>
                     <p>Socjoterapeutka z wieloletnim doświadczeniem</p>
                 </div>
@@ -561,7 +573,7 @@
     </section>
 
     <!-- Process Section -->
-    <section class="py-120">
+    <section class="py-120" aria-label="Proces współpracy">
         <div class="container">
             <div class="text-center mb-80">
                 <h2 class="section-title">Proces współpracy</h2>
@@ -682,7 +694,6 @@
             <div class="packages-grid">
                 <div class="package-card package-card--gold fade-in">
                     <h3>Pakiet 5 sesji</h3>
-                    <p>Kup 5 sesji, zapłać za 4</p>
                     <div class="package-price">
                         700 zł <span class="package-price-old">800 zł</span>
                     </div>
@@ -817,7 +828,7 @@
     </section>
 
     <!-- Benefits Section -->
-    <section class="warm-gradient py-120">
+    <section class="warm-gradient py-120" aria-label="Korzyści z socjoterapii">
         <div class="container">
             <div class="text-center mb-80">
                 <h2 class="section-title">Co zyskujesz dzięki socjoterapii?</h2>
@@ -942,7 +953,7 @@
     </section>
 
     <!-- Contact Info Section -->
-    <section class="warm-gradient py-80">
+    <section class="warm-gradient py-80" aria-label="Dane kontaktowe">
         <div class="container">
             <div class="contact-info-grid">
                 <div class="contact-info-card fade-in">
@@ -981,7 +992,7 @@
                 <source srcset="logo.webp" type="image/webp">
                 <img src="logo.png" alt="Logo Szlak Rozwoju — Socjoterapia Żywiec" id="footerLogo" width="200" height="93" loading="lazy" decoding="async">
             </picture>
-            <h3>Szlak Rozwoju</h3>
+            <p class="footer-title">Szlak Rozwoju</p>
             <p class="footer-description">
                 Gabinet Socjoterapii i Rozwoju Osobistego<br>
                 ul. Wiklinowa 7, 34-300 Żywiec, woj. śląskie<br>
@@ -1026,7 +1037,7 @@
         </div>
     </div>
 
-    <script src="js/main.js"></script>
+    <script src="js/main.js" defer></script>
 
 </body>
 
