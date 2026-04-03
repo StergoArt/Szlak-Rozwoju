@@ -102,6 +102,7 @@ document.getElementById('contactForm').addEventListener('submit', function (e) {
     var submitBtn = this.querySelector('button[type="submit"]');
     var originalText = submitBtn.textContent;
     submitBtn.disabled = true;
+    submitBtn.setAttribute('aria-busy', 'true');
     submitBtn.textContent = 'Wysyłanie...';
 
     var formData = new FormData(this);
@@ -130,6 +131,7 @@ document.getElementById('contactForm').addEventListener('submit', function (e) {
         showToast('Nie udało się wysłać formularza. Napisz na biuro@szlak-rozwoju.pl', 'error');
     }).finally(function () {
         submitBtn.disabled = false;
+        submitBtn.removeAttribute('aria-busy');
         submitBtn.textContent = originalText;
     });
 });
