@@ -55,13 +55,21 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Force HTTPS
+    # 1. http + www → https + non-www (single hop zamiast 2)
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP_HOST} ^www\.szlak-rozwoju\.pl$ [NC]
+    RewriteRule ^ https://szlak-rozwoju.pl%{REQUEST_URI} [L,R=301]
+
+    # 2. http (non-www) → https
     RewriteCond %{HTTPS} off
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-    # Force non-www (canonical: szlak-rozwoju.pl)
+    # 3. https + www → https + non-www
     RewriteCond %{HTTP_HOST} ^www\.szlak-rozwoju\.pl$ [NC]
     RewriteRule ^ https://szlak-rozwoju.pl%{REQUEST_URI} [L,R=301]
+
+    # 4. /index.html → / (eliminuje duplikat URL)
+    RewriteRule ^index\.html$ / [L,R=301]
 
     DirectoryIndex index.html
 </IfModule>
